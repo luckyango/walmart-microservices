@@ -78,7 +78,7 @@ class PaymentServiceTest {
         payment.setAmount(49.99);
         payment.setPaymentMethod("Visa");
         payment.setIdempotencyKey("idem-1");
-        payment.setStatus("SUBMITTED");
+        payment.setStatus("PAID");
         return payment;
     }
 }

@@ -1035,12 +1035,12 @@
                 <div class="checkout-list" id="checkoutItems"></div>
             </div>
 
-            <div class="checkout-panel">
-                <h3>Contact</h3>
-                <p>Use your account email, or continue as guest for this checkout.</p>
-                <div class="checkout-form two">
-                    <input id="checkoutEmail" type="email" placeholder="Email" autocomplete="email" />
-                    <input id="checkoutUsername" placeholder="Full name" autocomplete="name" />
+              <div class="checkout-panel">
+                  <h3>Contact</h3>
+                  <p>Use your signed-in account details for this checkout.</p>
+                  <div class="checkout-form two">
+                      <input id="checkoutEmail" type="email" placeholder="Email" autocomplete="email" />
+                      <input id="checkoutUsername" placeholder="Full name" autocomplete="name" />
                 </div>
             </div>
 
@@ -1052,19 +1052,19 @@
                 </div>
             </div>
 
-            <div class="checkout-panel">
-                <h3>Payment</h3>
-                <p>Enter payment details here. This demo stores one payment method label in the backend.</p>
-                <div class="checkout-form two">
-                    <input id="checkoutCardName" placeholder="Name on card" />
+              <div class="checkout-panel">
+                  <h3>Payment</h3>
+                  <p>Enter payment details here. This demo stores one payment method label in the backend.</p>
+                  <div class="checkout-form two">
+                      <input id="checkoutCardName" placeholder="Name on card" />
                     <input id="checkoutCardNumber" placeholder="Card number" />
                     <input id="checkoutCardExpiry" placeholder="MM/YY" />
                     <input id="checkoutCardCvv" type="password" placeholder="CVV" />
                 </div>
-                <div class="checkout-note">
-                    Best practice: guest checkout is common. In this demo, guest checkout is supported by creating a lightweight account behind the scenes because the current backend still requires a user id for order creation.
-                </div>
-            </div>
+                  <div class="checkout-note">
+                      Sign in is required before placing an order so the request can carry your authentication token.
+                  </div>
+              </div>
         </div>
 
         <aside class="checkout-side">
@@ -1087,13 +1087,13 @@
                     <span>Estimated total</span>
                     <span id="checkoutTotal">$0.00</span>
                 </div>
-                <div class="checkout-actions">
-                    <button class="primary" onclick="placeOrder()">Place order</button>
-                    <button class="secondary" onclick="openLoginModal()">Sign in instead</button>
-                </div>
-            </div>
-        </aside>
-    </div>
+                  <div class="checkout-actions">
+                      <button class="primary" onclick="placeOrder()">Place order</button>
+                      <button class="secondary" onclick="openLoginModal()">Sign in</button>
+                  </div>
+              </div>
+          </aside>
+      </div>
 </section>
 
 <section class="orders-page" id="ordersPage">
@@ -1196,6 +1196,18 @@ let currentPayment = null;
 let hasAutoSeeded = false;
 let messageTimer = null;
 
+function isSignedIn() {
+    return Boolean(token && currentUser && currentUser.id);
+}
+
+function authHeaders(extra = {}) {
+    const headers = { ...extra };
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
+    }
+    return headers;
+}
+
 function showToast(message, type = "info") {
     const bar = document.getElementById("messageBar");
     const text = document.getElementById("messageText");
@@ -1278,6 +1290,11 @@ function openOrdersFromMenu() {
 }
 
 function openCheckoutPage() {
+    if (!isSignedIn()) {
+        showToast("Please sign in before checkout.", "error");
+        openLoginModal();
+        return;
+    }
     syncCheckoutPage();
     document.getElementById("checkoutPage").classList.add("open");
     document.getElementById("ordersPage").classList.remove("open");
@@ -1325,7 +1342,7 @@ function closeAccountMenu() {
 
 function handleAccountClick(event) {
     event.stopPropagation();
-    if (currentUser && currentUser.username) {
+    if (isSignedIn() && currentUser.username) {
         const menu = document.getElementById("accountMenu");
         menu.classList.toggle("open");
         return;
@@ -1346,7 +1363,7 @@ function signOut() {
 }
 
 function updateAccountUi() {
-    if (currentUser && currentUser.username) {
+    if (isSignedIn() && currentUser.username) {
         document.getElementById("accountHeaderSmall").textContent = "Hi";
         document.getElementById("accountHeaderMain").textContent = currentUser.username;
         document.getElementById("registerHeaderLink").classList.add("hidden-link");
@@ -1456,7 +1473,9 @@ function syncCheckoutPage() {
 }
 
 async function loadUserOrders() {
-    const res = await fetch(`${ORDER_URL}/orders/user/${currentUser.id}`);
+    const res = await fetch(`${ORDER_URL}/orders/user/${currentUser.id}`, {
+        headers: authHeaders()
+    });
     const data = await parseResponse(res);
     const list = document.getElementById("ordersList");
 
@@ -1529,6 +1548,7 @@ async function register() {
 
     if (data && data.id) {
         currentUser = data;
+        await authenticateSilently(body.email, body.password);
         document.getElementById("loginEmail").value = data.email;
         updateAccountUi();
         syncCheckoutPage();
@@ -1543,7 +1563,18 @@ async function register() {
 async function login() {
     const email = document.getElementById("loginEmail").value;
     const password = document.getElementById("loginPassword").value;
+    const data = await authenticateSilently(email, password);
+    if (!data) {
+        return;
+    }
 
+    updateAccountUi();
+    syncCheckoutPage();
+    closeModal("loginModal");
+    showToast("Signed in successfully.", "success");
+}
+
+async function authenticateSilently(email, password) {
     const res = await fetch(`${USER_URL}/users/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
         method: "POST"
     });
@@ -1552,16 +1583,12 @@ async function login() {
     if (!res.ok) {
         const message = typeof data === "string" ? data : (data && data.message) || "Unable to sign in.";
         showToast(message, "error");
-        return;
+        return null;
     }
 
     token = data.token;
     currentUser = data.user;
-
-    updateAccountUi();
-    syncCheckoutPage();
-    closeModal("loginModal");
-    showToast("Signed in successfully.", "success");
+    return data;
 }
 
 async function seedItems() {
@@ -1639,7 +1666,8 @@ function clearCart() {
 
 async function createOrderFromItem(userId, itemId, qty) {
     const res = await fetch(`${ORDER_URL}/orders?userId=${userId}&itemId=${itemId}&qty=${qty}`, {
-        method: "POST"
+        method: "POST",
+        headers: authHeaders()
     });
     const data = await parseResponse(res);
 
@@ -1667,7 +1695,7 @@ async function checkoutFirstItem() {
 async function submitPayment(order, paymentMethod) {
     const res = await fetch(`${PAYMENT_URL}/payments`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
             orderId: order.id,
             userId: currentUser.id,
@@ -1688,40 +1716,11 @@ async function submitPayment(order, paymentMethod) {
 }
 
 async function ensureCheckoutUser() {
-    if (currentUser && currentUser.id && currentUser.id !== "unknown") {
+    if (isSignedIn() && currentUser.id !== "unknown") {
         return currentUser;
     }
-
-    const email = document.getElementById("checkoutEmail").value.trim();
-    const username = document.getElementById("checkoutUsername").value.trim() || email.split("@")[0];
-    const shippingAddress = document.getElementById("checkoutShipping").value.trim();
-    const billingAddress = document.getElementById("checkoutBilling").value.trim();
-    const paymentMethod = buildPaymentMethod();
-
-    if (!email || !shippingAddress || !billingAddress || !paymentMethod) {
-        showToast("Please complete contact, address, and payment information.", "error");
-        return null;
-    }
-
-    const res = await fetch(`${USER_URL}/users/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            email,
-            username,
-            password: `guest-${Date.now()}`,
-            shippingAddress,
-            billingAddress,
-            paymentMethod
-        })
-    });
-    const data = await parseResponse(res);
-    if (data && data.id) {
-        currentUser = data;
-        updateAccountUi();
-        return data;
-    }
-    showToast((data && data.message) || "Unable to create guest checkout account. Please sign in.", "error");
+    showToast("Please sign in to continue checkout.", "error");
+    openLoginModal();
     return null;
 }
 
@@ -1766,7 +1765,10 @@ async function placeOrder() {
         if (!payment || !payment.id) {
             return;
         }
-        const res = await fetch(`${ORDER_URL}/orders/${order.id}/pay`, { method: "POST" });
+        const res = await fetch(`${ORDER_URL}/orders/${order.id}/pay`, {
+            method: "POST",
+            headers: authHeaders()
+        });
         const paidOrder = await parseResponse(res);
         if (!paidOrder || !paidOrder.id) {
             showToast((paidOrder && paidOrder.message) || "Unable to mark order as paid.", "error");
@@ -1779,6 +1781,9 @@ async function placeOrder() {
     renderCart();
     syncCheckoutPage();
     closeCheckoutPage();
+    if (isSignedIn()) {
+        await loadUserOrders();
+    }
     showToast("Order placed successfully.", "success");
 }
 

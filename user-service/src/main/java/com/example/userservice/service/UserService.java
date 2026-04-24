@@ -1,8 +1,10 @@
 package com.example.userservice.service;
 
 import com.example.userservice.dto.LoginResponse;
+import com.example.userservice.dto.UserResponse;
 import com.example.userservice.model.AppUser;
 import com.example.userservice.repository.UserRepository;
+import com.example.userservice.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public AppUser register(AppUser user) {
         validateUser(user);
@@ -40,7 +43,7 @@ public class UserService {
             userRepository.save(user);
         }
 
-        return new LoginResponse("demo-token-user-" + user.getId(), user);
+        return new LoginResponse(jwtService.generateToken(user), UserResponse.from(user));
     }
 
     public AppUser getUser(Long id) {

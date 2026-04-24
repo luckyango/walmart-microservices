@@ -1,6 +1,7 @@
 package com.example.userservice.controller;
 
 import com.example.userservice.dto.LoginResponse;
+import com.example.userservice.dto.UserResponse;
 import com.example.userservice.model.AppUser;
 import com.example.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +15,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public AppUser register(@RequestBody AppUser user) {
-        return userService.register(user);
+    public UserResponse register(@RequestBody AppUser user) {
+        return UserResponse.from(userService.register(user));
     }
 
     @PostMapping("/login")
@@ -24,12 +25,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public AppUser getUser(@PathVariable Long id) {
-        return userService.getUser(id);
+    public UserResponse getUser(@PathVariable Long id) {
+        return UserResponse.from(userService.getUser(id));
     }
 
     @PutMapping("/{id}")
-    public AppUser updateUser(@PathVariable Long id, @RequestBody AppUser user) {
-        return userService.updateUser(id, user);
+    public UserResponse updateUser(@PathVariable Long id, @RequestBody AppUser user) {
+        return UserResponse.from(userService.updateUser(id, user));
     }
 }

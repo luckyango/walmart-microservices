@@ -2,6 +2,7 @@ package com.example.userservice.service;
 
 import com.example.userservice.model.AppUser;
 import com.example.userservice.repository.UserRepository;
+import com.example.userservice.security.JwtService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -25,6 +26,9 @@ class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private JwtService jwtService;
 
     @InjectMocks
     private UserService userService;
@@ -76,6 +80,7 @@ class UserServiceTest {
         AppUser user = buildUser();
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(passwordEncoder.encode("123456")).thenReturn("encoded-password");
+        when(jwtService.generateToken(any(AppUser.class))).thenReturn("jwt-token");
 
         userService.login(user.getEmail(), "123456");
 

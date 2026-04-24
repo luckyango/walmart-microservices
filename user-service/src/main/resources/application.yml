@@ -20,3 +20,8 @@ spring:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
+auth:
+  jwt:
+    secret: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+    expiration-ms: 86400000
