@@ -1,0 +1,16 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    url: jdbc:h2:mem:userdb
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

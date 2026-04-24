@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Walmart Style Microservice Demo</title>
+    <style>
+        :root {
+            --blue: #0071dc;
+            --blue-deep: #004f9a;
+            --yellow: #ffc220;
+            --bg: #111315;
+            --panel: #1b1d1f;
+            --panel-soft: #23262a;
+            --chip: #26292d;
+            --text: #f5f5f5;
+            --muted: #bfc4cb;
+            --line: #32363c;
+            --green: #7dff62;
+            --shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(0, 113, 220, 0.18), transparent 24%),
+                linear-gradient(180deg, #0f1720 0, #111315 180px, #111315 100%);
+            color: var(--text);
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+        }
+
+        .topbar {
+            background: linear-gradient(180deg, #0274e2 0%, #005fbe 100%);
+            padding: 14px 24px;
+        }
+
+        .topbar-inner,
+        .category-bar,
+        .main-grid,
+        .promo-strip,
+        .section {
+            width: min(1440px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+
+        .topbar-inner {
+            display: grid;
+            grid-template-columns: 84px minmax(220px, 380px) 1fr auto auto auto;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .brand {
+            width: 64px;
+            height: 64px;
+            border-radius: 999px;
+            background: #0053a3;
+            display: grid;
+            place-items: center;
+            color: var(--yellow);
+            font-size: 32px;
+            font-weight: 800;
+        }
+
+        .pickup-pill,
+        .nav-action {
+            background: rgba(0, 34, 76, 0.28);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 999px;
+            padding: 12px 18px;
+        }
+
+        .pickup-pill {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .pickup-title {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .pickup-subtitle,
+        .nav-action span:first-child {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        .search-shell {
+            background: #1f1f1f;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            padding: 8px 10px 8px 24px;
+            min-height: 58px;
+        }
+
+        .search-shell input {
+            flex: 1;
+            background: transparent;
+            color: white;
+            border: 0;
+            outline: 0;
+            font-size: 18px;
+        }
+
+        .search-button {
+            width: 42px;
+            height: 42px;
+            border-radius: 999px;
+            border: 0;
+            background: #0a3189;
+            color: white;
+            cursor: pointer;
+        }
+
+        .nav-action {
+            color: white;
+            min-width: 112px;
+        }
+
+        .nav-action strong {
+            display: block;
+            font-size: 16px;
+            margin-top: 2px;
+        }
+
+        .category-shell {
+            background: #1d1f21;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .category-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            overflow-x: auto;
+            padding: 12px 0;
+        }
+
+        .category-pill {
+            white-space: nowrap;
+            background: var(--chip);
+            color: #f3f4f6;
+            border-radius: 999px;
+            padding: 11px 18px;
+            font-size: 15px;
+        }
+
+        .promo-strip {
+            padding-top: 18px;
+        }
+
+        .signin-banner {
+            background: #17191b;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 20px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        .signin-badge {
+            width: 58px;
+            height: 58px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #5ec0ff 0%, #2279ff 100%);
+            display: grid;
+            place-items: center;
+            font-size: 28px;
+        }
+
+        .signin-copy {
+            font-size: 18px;
+            color: #7fb6ff;
+        }
+
+        .signin-banner button,
+        .cta,
+        .small-button,
+        .product-card button,
+        .mini-actions button {
+            border: 0;
+            cursor: pointer;
+        }
+
+        .signin-banner button,
+        .small-button,
+        .mini-actions button {
+            background: #242628;
+            color: #f4efe7;
+            border-radius: 999px;
+            padding: 12px 18px;
+            font-weight: 700;
+        }
+
+        .main-grid {
+            padding: 28px 0 40px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 360px;
+            gap: 22px;
+        }
+
+        .hero {
+            min-height: 360px;
+            border-radius: 28px;
+            overflow: hidden;
+            background: linear-gradient(100deg, #efe9df 0%, #eddac7 56%, #9fe04b 100%);
+            color: #2b2a2a;
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            box-shadow: var(--shadow);
+        }
+
+        .hero-copy {
+            padding: 34px 30px 30px;
+        }
+
+        .eyebrow {
+            font-size: 20px;
+            font-weight: 700;
+            color: rgba(60, 58, 55, 0.35);
+        }
+
+        .hero h1 {
+            margin: 18px 0 18px;
+            font-size: clamp(40px, 4.2vw, 74px);
+            line-height: 0.94;
+            letter-spacing: -0.04em;
+            color: rgba(75, 71, 67, 0.28);
+            max-width: 640px;
+        }
+
+        .hero p {
+            margin: 0 0 20px;
+            max-width: 460px;
+            color: rgba(39, 37, 35, 0.72);
+            font-size: 18px;
+        }
+
+        .cta {
+            background: #17191b;
+            color: white;
+            border-radius: 999px;
+            padding: 14px 20px;
+            font-weight: 700;
+        }
+
+        .hero-art {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: end;
+            gap: 18px;
+            padding: 28px;
+        }
+
+        .hero-product {
+            border-radius: 30px;
+            height: 240px;
+            box-shadow: 0 18px 40px rgba(111, 61, 8, 0.18);
+        }
+
+        .hero-product.orange {
+            background: linear-gradient(180deg, #f6a955 0%, #b4572f 100%);
+        }
+
+        .hero-product.green {
+            background: linear-gradient(180deg, #b0ff4f 0%, #30bf63 100%);
+        }
+
+        .hero-tag {
+            position: absolute;
+            bottom: 28px;
+            left: 28px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #202020;
+            border-radius: 16px;
+            padding: 10px 14px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .control-panel {
+            background: linear-gradient(180deg, #17191b 0%, #121416 100%);
+            border-radius: 28px;
+            padding: 22px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .panel-card {
+            background: var(--panel);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 18px;
+            padding: 16px;
+        }
+
+        .panel-card h3 {
+            margin: 0 0 12px;
+            font-size: 18px;
+        }
+
+        .panel-card p {
+            margin: 0 0 10px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .field-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .field-grid.two {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .field-grid input {
+            width: 100%;
+            border: 1px solid var(--line);
+            background: var(--panel-soft);
+            color: white;
+            border-radius: 14px;
+            padding: 12px 14px;
+            outline: none;
+        }
+
+        .mini-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 113, 220, 0.14);
+            border-radius: 999px;
+            color: #93c5fd;
+            padding: 10px 14px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .section {
+            padding-bottom: 32px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 4px 0 18px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 26px;
+        }
+
+        .section-link {
+            color: #f0f4f8;
+            text-decoration: underline;
+        }
+
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .product-card {
+            background: #1a1c1e;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            min-height: 360px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+        }
+
+        .product-image {
+            position: relative;
+            background: white;
+            aspect-ratio: 1 / 1;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .heart {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 46px;
+            height: 46px;
+            border-radius: 999px;
+            background: rgba(17, 19, 21, 0.9);
+            color: white;
+            display: grid;
+            place-items: center;
+            font-size: 22px;
+        }
+
+        .product-body {
+            padding: 14px 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .badge {
+            align-self: flex-start;
+            background: #0c4a6e;
+            color: #7dd3fc;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .price {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--green);
+        }
+
+        .meta {
+            color: var(--muted);
+            line-height: 1.45;
+            min-height: 42px;
+        }
+
+        .inventory {
+            font-size: 14px;
+            color: #93c5fd;
+        }
+
+        .product-card button {
+            margin-top: auto;
+            border-radius: 999px;
+            background: white;
+            color: #111827;
+            padding: 12px 14px;
+            font-weight: 800;
+        }
+
+        .story-grid {
+            display: grid;
+            grid-template-columns: 1.2fr repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .story-card {
+            border-radius: 20px;
+            background: #1a1c1e;
+            min-height: 200px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .story-card.large {
+            background: linear-gradient(135deg, #bb8a4d 0%, #6a4c2b 100%);
+        }
+
+        .story-card.small:nth-child(2) {
+            background: linear-gradient(135deg, #ebd38a 0%, #e0b962 100%);
+        }
+
+        .story-card.small:nth-child(3) {
+            background: linear-gradient(135deg, #c7d7d7 0%, #eccfdd 100%);
+        }
+
+        .story-card.small:nth-child(4) {
+            background: linear-gradient(135deg, #eee5d9 0%, #f4fbff 100%);
+        }
+
+        .story-card.small:nth-child(5) {
+            background: linear-gradient(135deg, #d0dbe8 0%, #f4f6ff 100%);
+        }
+
+        .story-content {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 100%;
+        }
+
+        .story-content strong {
+            font-size: 28px;
+            max-width: 240px;
+        }
+
+        .cart-list,
+        .log-output {
+            display: grid;
+            gap: 10px;
+        }
+
+        .cart-item {
+            background: #202327;
+            border-radius: 14px;
+            padding: 12px;
+            display: grid;
+            gap: 6px;
+        }
+
+        .cart-item strong {
+            font-size: 15px;
+        }
+
+        .result-box {
+            margin-top: 8px;
+            background: #0b1120;
+            color: #dbeafe;
+            padding: 14px;
+            border-radius: 16px;
+            max-height: 260px;
+            overflow: auto;
+            white-space: pre-wrap;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .footer-space {
+            height: 42px;
+        }
+
+        @media (max-width: 1220px) {
+            .topbar-inner {
+                grid-template-columns: 74px 1fr auto auto;
+            }
+
+            .pickup-pill {
+                display: none;
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .featured-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .story-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 820px) {
+            .topbar {
+                padding: 12px 14px;
+            }
+
+            .topbar-inner {
+                grid-template-columns: 58px 1fr;
+                gap: 12px;
+            }
+
+            .search-shell {
+                grid-column: 1 / -1;
+                min-height: 52px;
+                padding-left: 16px;
+            }
+
+            .nav-action {
+                display: none;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .featured-grid,
+            .story-grid,
+            .field-grid.two {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header {
+                align-items: flex-start;
+                gap: 8px;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="site-header">
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand" aria-label="store brand">*</div>
+
+            <div class="pickup-pill">
+                <div class="pickup-title">Pickup or delivery?</div>
+                <div class="pickup-subtitle">Durham, 27708 - Demo storefront</div>
+            </div>
+
+            <label class="search-shell">
+                <input id="searchInput" placeholder="Search everything in the demo store" />
+                <button class="search-button" onclick="filterProducts()" aria-label="search">&#128269;</button>
+            </label>
+
+            <div class="nav-action">
+                <span>Reorder</span>
+                <strong>My Items</strong>
+            </div>
+
+            <div class="nav-action">
+                <span>Sign In</span>
+                <strong>Account</strong>
+            </div>
+
+            <div class="nav-action">
+                <span>Cart</span>
+                <strong id="cartHeaderTotal">$0.00</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="category-shell">
+        <div class="category-bar">
+            <div class="category-pill">Departments</div>
+            <div class="category-pill">Services</div>
+            <div class="category-pill">Rollbacks &amp; More</div>
+            <div class="category-pill">Mother's Day</div>
+            <div class="category-pill">Get it Fast</div>
+            <div class="category-pill">Pharmacy</div>
+            <div class="category-pill">New Arrivals</div>
+            <div class="category-pill">Patio &amp; Garden</div>
+            <div class="category-pill">Meals Made Easy</div>
+            <div class="category-pill">My Items</div>
+            <div class="category-pill">Only at DemoMart</div>
+            <div class="category-pill">Credit Card</div>
+        </div>
+    </div>
+</header>
+
+<div class="promo-strip">
+    <div class="signin-banner">
+        <div class="signin-badge">&#128179;</div>
+        <div class="signin-copy">Sign in to save your cart, place orders, and demo the account flow.</div>
+        <button onclick="scrollToPanel('accountPanel')">Sign in or create an account</button>
+    </div>
+</div>
+
+<main class="main-grid">
+    <section>
+        <div class="hero">
+            <div class="hero-copy">
+                <div class="eyebrow">Modern microservices for online shopping</div>
+                <h1>Global demo storefront inspired by big-box retail.</h1>
+                <p>
+                    This first-demo frontend keeps the familiar marketplace feel while wiring directly
+                    into your account, item, and order microservices.
+                </p>
+                <button class="cta" onclick="loadItems()">Shop now</button>
+            </div>
+
+            <div class="hero-art">
+                <div class="hero-product orange"></div>
+                <div class="hero-product green"></div>
+                <div class="hero-tag">Live backend demo: account + item + order services</div>
+            </div>
+        </div>
+
+        <section class="section" style="padding-top: 28px;">
+            <div class="section-header">
+                <h2>Discover Great Brands</h2>
+                <a class="section-link" href="#" onclick="loadItems(); return false;">Shop all</a>
+            </div>
+            <div class="featured-grid" id="productGrid"></div>
+        </section>
+
+        <section class="section">
+            <div class="section-header">
+                <h2>Seasonal Highlights</h2>
+                <a class="section-link" href="#" onclick="scrollToPanel('opsPanel'); return false;">View all</a>
+            </div>
+            <div class="story-grid">
+                <div class="story-card large">
+                    <div class="story-content">
+                        <span>Featured shopping flow</span>
+                        <strong>Account creation, item browse, checkout, and order lookup.</strong>
+                    </div>
+                </div>
+                <div class="story-card small"></div>
+                <div class="story-card small"></div>
+                <div class="story-card small"></div>
+                <div class="story-card small"></div>
+            </div>
+        </section>
+    </section>
+
+    <aside class="control-panel">
+        <div class="panel-card" id="accountPanel">
+            <h3>Account Service</h3>
+            <p>Create or update an account, sign in, and reuse the generated user id for the order demo.</p>
+            <div class="field-grid">
+                <input id="email" placeholder="Email" value="nova@test.com" />
+                <input id="username" placeholder="User name" value="Nova" />
+                <input id="password" placeholder="Password" value="123456" />
+                <input id="shipping" placeholder="Shipping address" value="Durham, NC" />
+                <input id="billing" placeholder="Billing address" value="Durham, NC" />
+                <input id="payment" placeholder="Payment method" value="Visa **** 1234" />
+            </div>
+            <div class="mini-actions">
+                <button onclick="register()">Register</button>
+                <button onclick="updateAccount()">Update account</button>
+                <button onclick="login()">Login</button>
+            </div>
+            <div class="status-pill" id="authStatus">Token not generated yet</div>
+        </div>
+
+        <div class="panel-card">
+            <h3>Item Service</h3>
+            <p>Create sample products for the demo, then load them into the storefront cards.</p>
+            <div class="field-grid two">
+                <input id="itemName" placeholder="Item name" value="Laptop" />
+                <input id="upc" placeholder="UPC" value="UPC-1001" />
+                <input id="price" placeholder="Price" value="999.99" />
+                <input id="inventory" placeholder="Inventory" value="10" />
+            </div>
+            <div class="field-grid" style="margin-top: 10px;">
+                <input id="pictureUrl" placeholder="Picture url" value="https://images.unsplash.com/photo-1517336714739-489689fd1ca8?auto=format&fit=crop&w=800&q=80" />
+            </div>
+            <div class="mini-actions">
+                <button onclick="createItem()">Create item</button>
+                <button onclick="seedItems()">Seed demo items</button>
+                <button onclick="loadItems()">Refresh grid</button>
+            </div>
+        </div>
+
+        <div class="panel-card" id="opsPanel">
+            <h3>Order Service</h3>
+            <p>Use the cart or submit a direct order. The order id will auto-fill after checkout, then you can update quantity, pay, or cancel.</p>
+            <div class="field-grid two">
+                <input id="userId" placeholder="User id" value="1" />
+                <input id="orderItemId" placeholder="Item id" value="1" />
+                <input id="qty" placeholder="Quantity" value="1" />
+                <input id="orderId" placeholder="Order id" value="1" />
+            </div>
+            <div class="mini-actions">
+                <button onclick="createOrder()">Create order</button>
+                <button onclick="updateOrder()">Update order</button>
+                <button onclick="payOrder()">Pay</button>
+                <button onclick="cancelOrder()">Cancel</button>
+                <button onclick="getOrder()">Lookup</button>
+            </div>
+        </div>
+
+        <div class="panel-card">
+            <h3>Payment Service</h3>
+            <p>Submit payment with an idempotency key, then refund it if the order gets cancelled.</p>
+            <div class="field-grid two">
+                <input id="paymentId" placeholder="Payment id" value="" />
+                <input id="paymentAmount" placeholder="Amount" value="0" />
+                <input id="paymentMethodInput" placeholder="Payment method" value="Visa **** 1234" />
+                <input id="idempotencyKey" placeholder="Idempotency key" value="" />
+            </div>
+            <div class="mini-actions">
+                <button onclick="submitPayment()">Submit payment</button>
+                <button onclick="payAndMarkOrder()">Submit payment + mark paid</button>
+                <button onclick="refundPayment()">Refund payment</button>
+                <button onclick="getPayment()">Lookup payment</button>
+            </div>
+        </div>
+
+        <div class="panel-card">
+            <h3>Cart</h3>
+            <p>Add products from the grid, then convert the first cart line into an order.</p>
+            <div class="cart-list" id="cartList">
+                <div class="cart-item">Your cart is empty.</div>
+            </div>
+            <div class="mini-actions">
+                <button onclick="checkoutFirstItem()">Checkout first item</button>
+                <button onclick="clearCart()">Clear cart</button>
+            </div>
+        </div>
+
+        <div class="panel-card">
+            <h3>API Response</h3>
+            <div class="result-box" id="result">Result will show here...</div>
+        </div>
+    </aside>
+</main>
+
+<div class="footer-space"></div>
+
+<script>
+const USER_URL = "http://localhost:8081";
+const ITEM_URL = "http://localhost:8082";
+const ORDER_URL = "http://localhost:8083";
+const PAYMENT_URL = "http://localhost:8084";
+const fallbackImages = [
+    "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1585386959984-a41552231658?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=800&q=80"
+];
+
+let token = "";
+let storeItems = [];
+let cart = [];
+let paymentId = null;
+
+function show(data) {
+    document.getElementById("result").textContent =
+        typeof data === "string" ? data : JSON.stringify(data, null, 2);
+}
+
+function scrollToPanel(id) {
+    document.getElementById(id).scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function formatPrice(value) {
+    return Number(value || 0).toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD"
+    });
+}
+
+function updateCartHeader() {
+    const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+    document.getElementById("cartHeaderTotal").textContent = formatPrice(total);
+}
+
+function renderCart() {
+    const cartList = document.getElementById("cartList");
+    if (!cart.length) {
+        cartList.innerHTML = '<div class="cart-item">Your cart is empty.</div>';
+        updateCartHeader();
+        return;
+    }
+
+    cartList.innerHTML = cart.map((item, index) => `
+        <div class="cart-item">
+            <strong>${item.name}</strong>
+            <div>Item ID: ${item.id} | Qty: ${item.qty}</div>
+            <div>Total: ${formatPrice(item.price * item.qty)}</div>
+            <button class="small-button" onclick="removeFromCart(${index})">Remove</button>
+        </div>
+    `).join("");
+
+    updateCartHeader();
+}
+
+function productImage(item, index) {
+    return item.pictureUrl || fallbackImages[index % fallbackImages.length];
+}
+
+function renderItems(items) {
+    const grid = document.getElementById("productGrid");
+    if (!items.length) {
+        grid.innerHTML = '<div class="panel-card" style="grid-column: 1 / -1;">No products yet. Use "Seed demo items" or create one manually.</div>';
+        return;
+    }
+
+    grid.innerHTML = items.map((item, index) => `
+        <article class="product-card">
+            <div class="product-image">
+                <img src="${productImage(item, index)}" alt="${item.name}" />
+                <div class="heart">&#9825;</div>
+            </div>
+            <div class="product-body">
+                <div class="badge">${index % 2 === 0 ? "Reduced price" : "Popular pick"}</div>
+                <div class="price">Now ${formatPrice(item.price)}</div>
+                <div><strong>${item.name}</strong></div>
+                <div class="meta">UPC ${item.upc || "N/A"} - Ready for demo checkout flow</div>
+                <div class="inventory">Inventory: ${item.inventory}</div>
+                <button onclick="addToCart(${item.id})">Add to cart</button>
+            </div>
+        </article>
+    `).join("");
+}
+
+function filterProducts() {
+    const keyword = document.getElementById("searchInput").value.trim().toLowerCase();
+    if (!keyword) {
+        renderItems(storeItems);
+        return;
+    }
+    const filtered = storeItems.filter(item =>
+        (item.name || "").toLowerCase().includes(keyword) ||
+        (item.upc || "").toLowerCase().includes(keyword)
+    );
+    renderItems(filtered);
+}
+
+async function parseResponse(res) {
+    const text = await res.text();
+    if (!text) {
+        return {};
+    }
+    try {
+        return JSON.parse(text);
+    } catch {
+        return text;
+    }
+}
+
+async function register() {
+    const body = {
+        email: document.getElementById("email").value,
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value,
+        shippingAddress: document.getElementById("shipping").value,
+        billingAddress: document.getElementById("billing").value,
+        paymentMethod: document.getElementById("payment").value
+    };
+
+    const res = await fetch(`${USER_URL}/users/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+    });
+    const data = await parseResponse(res);
+    if (data && data.id) {
+        document.getElementById("userId").value = data.id;
+    }
+    show(data);
+}
+
+async function updateAccount() {
+    const userId = document.getElementById("userId").value;
+    const body = {
+        email: document.getElementById("email").value,
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value,
+        shippingAddress: document.getElementById("shipping").value,
+        billingAddress: document.getElementById("billing").value,
+        paymentMethod: document.getElementById("payment").value
+    };
+
+    const res = await fetch(`${USER_URL}/users/${userId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+    });
+    show(await parseResponse(res));
+}
+
+async function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const res = await fetch(`${USER_URL}/users/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
+        method: "POST"
+    });
+    token = await res.text();
+    document.getElementById("authStatus").textContent = `Token ready: ${token}`;
+    document.getElementById("paymentMethodInput").value = document.getElementById("payment").value;
+    show(`Login success. Token: ${token}`);
+}
+
+async function createItem() {
+    const body = {
+        name: document.getElementById("itemName").value,
+        upc: document.getElementById("upc").value,
+        price: Number(document.getElementById("price").value),
+        inventory: Number(document.getElementById("inventory").value),
+        pictureUrl: document.getElementById("pictureUrl").value
+    };
+    const res = await fetch(`${ITEM_URL}/items`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+    });
+    show(await parseResponse(res));
+    await loadItems();
+}
+
+async function seedItems() {
+    const demoItems = [
+        {
+            name: "Sport Research Magnesium Glycinate",
+            upc: "UPC-2001",
+            price: 29.99,
+            inventory: 18,
+            pictureUrl: fallbackImages[0]
+        },
+        {
+            name: "Comfy Yellow Duck Plush",
+            upc: "UPC-2002",
+            price: 17.99,
+            inventory: 12,
+            pictureUrl: fallbackImages[1]
+        },
+        {
+            name: "Vitamin D3 + K2",
+            upc: "UPC-2003",
+            price: 26.99,
+            inventory: 22,
+            pictureUrl: fallbackImages[2]
+        },
+        {
+            name: "Lavender Hand Cream",
+            upc: "UPC-2004",
+            price: 8.96,
+            inventory: 40,
+            pictureUrl: fallbackImages[3]
+        },
+        {
+            name: "Peppermint Laundry Detergent",
+            upc: "UPC-2005",
+            price: 15.98,
+            inventory: 14,
+            pictureUrl: fallbackImages[4]
+        }
+    ];
+
+    for (const item of demoItems) {
+        await fetch(`${ITEM_URL}/items`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(item)
+        });
+    }
+
+    show("Demo items seeded.");
+    await loadItems();
+}
+
+async function loadItems() {
+    const res = await fetch(`${ITEM_URL}/items`);
+    storeItems = await parseResponse(res);
+    if (!Array.isArray(storeItems)) {
+        show(storeItems);
+        return;
+    }
+    renderItems(storeItems);
+    show(storeItems);
+}
+
+function addToCart(itemId) {
+    const item = storeItems.find(entry => entry.id === itemId);
+    if (!item) {
+        show("Item not found in loaded store items.");
+        return;
+    }
+
+    const existing = cart.find(entry => entry.id === itemId);
+    if (existing) {
+        existing.qty += 1;
+    } else {
+        cart.push({
+            id: item.id,
+            name: item.name,
+            price: Number(item.price),
+            qty: 1
+        });
+    }
+
+    document.getElementById("orderItemId").value = item.id;
+    document.getElementById("qty").value = 1;
+    renderCart();
+    show(`Added "${item.name}" to cart.`);
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    renderCart();
+    show("Item removed from cart.");
+}
+
+function clearCart() {
+    cart = [];
+    renderCart();
+    show("Cart cleared.");
+}
+
+async function createOrder() {
+    const userId = document.getElementById("userId").value;
+    const itemId = document.getElementById("orderItemId").value;
+    const qty = document.getElementById("qty").value;
+    const res = await fetch(`${ORDER_URL}/orders?userId=${userId}&itemId=${itemId}&qty=${qty}`, {
+        method: "POST"
+    });
+    const data = await parseResponse(res);
+    if (data && data.id) {
+        document.getElementById("orderId").value = data.id;
+        document.getElementById("paymentAmount").value = data.totalPrice;
+        document.getElementById("idempotencyKey").value = `pay-order-${data.id}`;
+    }
+    show(data);
+    await loadItems();
+}
+
+async function updateOrder() {
+    const orderId = document.getElementById("orderId").value;
+    const qty = Number(document.getElementById("qty").value);
+    const res = await fetch(`${ORDER_URL}/orders/${orderId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quantity: qty })
+    });
+    const data = await parseResponse(res);
+    if (data && data.totalPrice !== undefined) {
+        document.getElementById("paymentAmount").value = data.totalPrice;
+    }
+    show(data);
+    await loadItems();
+}
+
+async function checkoutFirstItem() {
+    if (!cart.length) {
+        show("Cart is empty. Add a product first.");
+        return;
+    }
+    const first = cart[0];
+    document.getElementById("orderItemId").value = first.id;
+    document.getElementById("qty").value = first.qty;
+    await createOrder();
+}
+
+async function payOrder() {
+    const orderId = document.getElementById("orderId").value;
+    const res = await fetch(`${ORDER_URL}/orders/${orderId}/pay`, { method: "POST" });
+    show(await parseResponse(res));
+}
+
+async function cancelOrder() {
+    const orderId = document.getElementById("orderId").value;
+    const res = await fetch(`${ORDER_URL}/orders/${orderId}/cancel`, { method: "POST" });
+    show(await parseResponse(res));
+    await loadItems();
+}
+
+async function getOrder() {
+    const orderId = document.getElementById("orderId").value;
+    const res = await fetch(`${ORDER_URL}/orders/${orderId}`);
+    show(await parseResponse(res));
+}
+
+async function submitPayment() {
+    const orderId = Number(document.getElementById("orderId").value);
+    const userId = Number(document.getElementById("userId").value);
+    const amount = Number(document.getElementById("paymentAmount").value);
+    const paymentMethod = document.getElementById("paymentMethodInput").value;
+    let idempotencyKey = document.getElementById("idempotencyKey").value.trim();
+
+    if (!idempotencyKey) {
+        idempotencyKey = `pay-order-${orderId}`;
+        document.getElementById("idempotencyKey").value = idempotencyKey;
+    }
+
+    const res = await fetch(`${PAYMENT_URL}/payments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, userId, amount, paymentMethod, idempotencyKey })
+    });
+    const data = await parseResponse(res);
+    if (data && data.id) {
+        paymentId = data.id;
+        document.getElementById("paymentId").value = data.id;
+    }
+    show(data);
+    return data;
+}
+
+async function getPayment() {
+    const currentPaymentId = document.getElementById("paymentId").value;
+    const res = await fetch(`${PAYMENT_URL}/payments/${currentPaymentId}`);
+    show(await parseResponse(res));
+}
+
+async function refundPayment() {
+    const currentPaymentId = document.getElementById("paymentId").value;
+    const res = await fetch(`${PAYMENT_URL}/payments/${currentPaymentId}/refund`, {
+        method: "POST"
+    });
+    show(await parseResponse(res));
+}
+
+async function payAndMarkOrder() {
+    await submitPayment();
+    await payOrder();
+}
+
+renderCart();
+loadItems();
+</script>
+</body>
+</html>
