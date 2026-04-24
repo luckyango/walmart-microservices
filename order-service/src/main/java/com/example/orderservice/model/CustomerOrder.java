@@ -13,7 +13,7 @@ public class CustomerOrder {
     private Long id;
 
     private Long userId;
-    private Long itemId;
+    private String itemId;
     private int quantity;
     private double totalPrice;
     private String status; // CREATED, PAID, CANCELLED

@@ -20,7 +20,7 @@ public class OrderService {
     @Value("${services.item-service-url}")
     private String itemServiceUrl;
 
-    public CustomerOrder createOrder(Long userId, Long itemId, int qty) {
+    public CustomerOrder createOrder(Long userId, String itemId, int qty) {
         if (qty <= 0) {
             throw new IllegalArgumentException("Quantity must be positive");
         }

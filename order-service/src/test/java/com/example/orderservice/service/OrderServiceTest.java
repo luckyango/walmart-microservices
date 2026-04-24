@@ -34,7 +34,7 @@ class OrderServiceTest {
     @Test
     void createShouldRejectNonPositiveQty() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> orderService.createOrder(1L, 1L, 0));
+                () -> orderService.createOrder(1L, "item-1", 0));
 
         assertEquals("Quantity must be positive", ex.getMessage());
     }
@@ -46,8 +46,8 @@ class OrderServiceTest {
         ItemDto item = buildItem();
 
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-        when(restTemplate.getForObject("http://localhost:8082/items/11", ItemDto.class)).thenReturn(item);
-        when(restTemplate.postForObject(eq("http://localhost:8082/items/11/decrease?qty=2"), eq(null), eq(ItemDto.class)))
+        when(restTemplate.getForObject("http://localhost:8082/items/item-11", ItemDto.class)).thenReturn(item);
+        when(restTemplate.postForObject(eq("http://localhost:8082/items/item-11/decrease?qty=2"), eq(null), eq(ItemDto.class)))
                 .thenReturn(item);
         when(orderRepository.save(any(CustomerOrder.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -73,7 +73,7 @@ class OrderServiceTest {
         CustomerOrder order = new CustomerOrder();
         order.setId(1L);
         order.setUserId(1L);
-        order.setItemId(11L);
+        order.setItemId("item-11");
         order.setQuantity(2);
         order.setTotalPrice(40.0);
         order.setStatus("CREATED");
@@ -82,7 +82,7 @@ class OrderServiceTest {
 
     private ItemDto buildItem() {
         ItemDto item = new ItemDto();
-        item.setId(11L);
+        item.setId("item-11");
         item.setName("Demo item");
         item.setPrice(20.0);
         item.setInventory(20);

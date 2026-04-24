@@ -38,10 +38,10 @@ class ItemServiceTest {
     @Test
     void decreaseInventoryShouldUpdateRemainingCount() {
         Item item = buildItem();
-        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
+        when(itemRepository.findById("item-1")).thenReturn(Optional.of(item));
         when(itemRepository.save(any(Item.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Item updated = itemService.decreaseInventory(1L, 3);
+        Item updated = itemService.decreaseInventory("item-1", 3);
 
         assertEquals(7, updated.getInventory());
     }
@@ -49,17 +49,17 @@ class ItemServiceTest {
     @Test
     void increaseInventoryShouldRejectNonPositiveQty() {
         Item item = buildItem();
-        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
+        when(itemRepository.findById("item-1")).thenReturn(Optional.of(item));
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> itemService.increaseInventory(1L, 0));
+                () -> itemService.increaseInventory("item-1", 0));
 
         assertEquals("Quantity must be positive", ex.getMessage());
     }
 
     private Item buildItem() {
         Item item = new Item();
-        item.setId(1L);
+        item.setId("item-1");
         item.setName("Laptop");
         item.setUpc("UPC-1");
         item.setPrice(999.99);

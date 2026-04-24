@@ -17,7 +17,7 @@ public class OrderController {
 
     @PostMapping
     public CustomerOrder createOrder(@RequestParam("userId") Long userId,
-                                     @RequestParam("itemId") Long itemId,
+                                     @RequestParam("itemId") String itemId,
                                      @RequestParam("qty") int qty) {
         return orderService.createOrder(userId, itemId, qty);
     }

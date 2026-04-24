@@ -45,8 +45,7 @@
         .category-bar,
         .page,
         .promo,
-        .section,
-        .message-bar {
+        .section {
             width: min(1480px, calc(100% - 32px));
             margin: 0 auto;
         }
@@ -94,10 +93,45 @@
         .header-link {
             min-width: 112px;
             cursor: pointer;
+            position: relative;
         }
 
         .header-link.hidden-link {
             display: none;
+        }
+
+        .account-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            min-width: 200px;
+            background: white;
+            color: #111827;
+            border-radius: 18px;
+            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+            padding: 10px;
+            display: none;
+            z-index: 45;
+        }
+
+        .account-menu.open {
+            display: block;
+        }
+
+        .account-menu button {
+            width: 100%;
+            border: 0;
+            background: transparent;
+            color: #111827;
+            text-align: left;
+            padding: 12px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .account-menu button:hover {
+            background: #eff3f8;
         }
 
         .search {
@@ -157,26 +191,29 @@
             font-size: 15px;
         }
 
-        .page {
-            padding: 24px 0 48px;
-        }
-
-        .message-wrap {
-            padding-top: 14px;
-        }
-
         .message-bar {
+            position: fixed;
+            top: 132px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-12px);
+            z-index: 75;
+            min-width: 320px;
+            max-width: min(680px, calc(100vw - 32px));
             display: none;
             align-items: center;
-            justify-content: space-between;
-            gap: 16px;
+            justify-content: center;
+            gap: 12px;
             padding: 14px 18px;
             border-radius: 16px;
             box-shadow: var(--shadow);
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
         }
 
         .message-bar.show {
             display: flex;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
 
         .message-bar.info {
@@ -192,6 +229,10 @@
         .message-bar.error {
             background: #fff1f2;
             color: #b42318;
+        }
+
+        .page {
+            padding: 24px 0 48px;
         }
 
         .promo {
@@ -261,6 +302,272 @@
 
         .section {
             margin-top: 28px;
+        }
+
+        .checkout-page {
+            display: none;
+            width: min(1480px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 22px 0 48px;
+        }
+
+        .checkout-page.open {
+            display: block;
+        }
+
+        .checkout-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 420px;
+            gap: 26px;
+            align-items: start;
+        }
+
+        .checkout-main,
+        .checkout-side {
+            display: grid;
+            gap: 18px;
+        }
+
+        .checkout-hero,
+        .checkout-panel,
+        .checkout-side-card {
+            background: #181b1f;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        .checkout-hero {
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .checkout-hero h1 {
+            margin: 0 0 8px;
+            font-size: 42px;
+        }
+
+        .checkout-hero p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        .checkout-panel {
+            padding: 20px;
+        }
+
+        .checkout-panel h3,
+        .checkout-side-card h3 {
+            margin: 0 0 12px;
+            font-size: 24px;
+        }
+
+        .checkout-panel p,
+        .checkout-side-card p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+
+        .checkout-list {
+            display: grid;
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .checkout-item {
+            display: grid;
+            grid-template-columns: 110px 1fr auto;
+            gap: 16px;
+            align-items: center;
+            padding: 16px;
+            border-radius: 18px;
+            background: #23262b;
+        }
+
+        .checkout-item-image {
+            width: 110px;
+            height: 110px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .checkout-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .checkout-item strong {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 20px;
+        }
+
+        .checkout-item .muted {
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.45;
+        }
+
+        .checkout-item-price {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--green);
+        }
+
+        .checkout-form {
+            display: grid;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .checkout-form.two {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .checkout-form input {
+            width: 100%;
+            border: 1px solid #d6dce4;
+            border-radius: 14px;
+            padding: 13px 14px;
+            outline: 0;
+        }
+
+        .checkout-side-card {
+            padding: 20px;
+        }
+
+        .order-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 14px;
+            color: var(--muted);
+        }
+
+        .order-line.total {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            color: white;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .checkout-actions {
+            display: grid;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .checkout-actions button {
+            border: 0;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 700;
+            padding: 14px 16px;
+        }
+
+        .checkout-actions .primary {
+            background: var(--blue);
+            color: white;
+        }
+
+        .checkout-actions .secondary {
+            background: #2a2e34;
+            color: white;
+        }
+
+        .checkout-note {
+            margin-top: 14px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            background: #0c3f8f;
+            color: #e5f0ff;
+            line-height: 1.45;
+        }
+
+        .orders-page {
+            display: none;
+            width: min(1480px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 22px 0 48px;
+        }
+
+        .orders-page.open {
+            display: block;
+        }
+
+        .orders-hero,
+        .orders-list,
+        .order-record {
+            background: #181b1f;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        .orders-hero {
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .orders-hero h1 {
+            margin: 0 0 8px;
+            font-size: 42px;
+        }
+
+        .orders-hero p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        .orders-list {
+            margin-top: 18px;
+            padding: 20px;
+            display: grid;
+            gap: 16px;
+        }
+
+        .order-record {
+            padding: 18px;
+        }
+
+        .order-record strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 22px;
+        }
+
+        .order-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .order-status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #0c4a6e;
+            color: #8dd6ff;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 12px;
         }
 
         .section-head {
@@ -600,6 +907,7 @@
             .delivery-pill { display: none; }
             .promo { grid-template-columns: 1fr; }
             .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .checkout-layout { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 860px) {
@@ -611,7 +919,9 @@
             .header-link { display: none; }
             .promo-media,
             .grid,
-            .form-grid.two { grid-template-columns: 1fr; }
+            .form-grid.two,
+            .checkout-form.two,
+            .checkout-item { grid-template-columns: 1fr; }
             .section-head {
                 flex-direction: column;
                 align-items: flex-start;
@@ -636,9 +946,13 @@
             <button onclick="filterProducts()" aria-label="search">&#128269;</button>
         </label>
 
-        <div class="header-link" onclick="openLoginModal()">
+        <div class="header-link" id="accountHeaderLink" onclick="handleAccountClick(event)">
             <span id="accountHeaderSmall">Sign In</span>
             <strong id="accountHeaderMain">Account</strong>
+            <div class="account-menu" id="accountMenu">
+                <button onclick="openOrdersFromMenu()">My order</button>
+                <button onclick="signOut()">Sign out</button>
+            </div>
         </div>
 
         <div class="header-link" id="registerHeaderLink" onclick="openRegisterModal()">
@@ -668,15 +982,12 @@
     </div>
 </header>
 
-<div class="message-wrap">
-    <div class="message-bar info" id="messageBar">
-        <div id="messageText">Welcome to DemoMart.</div>
-        <button class="mini-btn" onclick="hideMessage()">Dismiss</button>
-    </div>
+<div class="message-bar info" id="messageBar">
+    <div id="messageText">Welcome to DemoMart.</div>
 </div>
 
 <main class="page">
-    <section class="promo">
+    <section class="promo" id="storefrontHero">
         <div class="promo-copy">
             <h1>Save more on the products customers love right now.</h1>
             <p>Browse fresh arrivals, add your favorites to cart, and complete checkout with a real account, order, and payment flow behind the storefront.</p>
@@ -684,7 +995,7 @@
                 <button class="cta" onclick="loadItems()">Shop deals</button>
                 <button class="ghost-btn" id="heroRegisterBtn" onclick="openRegisterModal()">Create account</button>
                 <button class="ghost-btn" id="heroLoginBtn" onclick="openLoginModal()">Sign in</button>
-                <button class="ghost-btn hidden" id="heroOrdersBtn" onclick="openCheckoutModal()">My order</button>
+                <button class="ghost-btn hidden" id="heroOrdersBtn" onclick="openOrdersPage()">My order</button>
             </div>
         </div>
 
@@ -706,6 +1017,95 @@
         <div class="grid" id="productGrid"></div>
     </section>
 </main>
+
+<section class="checkout-page" id="checkoutPage">
+    <div class="checkout-layout">
+        <div class="checkout-main">
+            <div class="checkout-hero">
+                <div>
+                    <h1>Checkout</h1>
+                    <p>Review your cart, enter delivery details, and complete payment.</p>
+                </div>
+                <button class="ghost-btn" onclick="closeCheckoutPage()">Back to shopping</button>
+            </div>
+
+            <div class="checkout-panel">
+                <h3>Your cart</h3>
+                <p>Items ready to be placed in this demo checkout.</p>
+                <div class="checkout-list" id="checkoutItems"></div>
+            </div>
+
+            <div class="checkout-panel">
+                <h3>Contact</h3>
+                <p>Use your account email, or continue as guest for this checkout.</p>
+                <div class="checkout-form two">
+                    <input id="checkoutEmail" type="email" placeholder="Email" autocomplete="email" />
+                    <input id="checkoutUsername" placeholder="Full name" autocomplete="name" />
+                </div>
+            </div>
+
+            <div class="checkout-panel">
+                <h3>Shipping address</h3>
+                <div class="checkout-form">
+                    <input id="checkoutShipping" placeholder="Shipping address" />
+                    <input id="checkoutBilling" placeholder="Billing address" />
+                </div>
+            </div>
+
+            <div class="checkout-panel">
+                <h3>Payment</h3>
+                <p>Enter payment details here. This demo stores one payment method label in the backend.</p>
+                <div class="checkout-form two">
+                    <input id="checkoutCardName" placeholder="Name on card" />
+                    <input id="checkoutCardNumber" placeholder="Card number" />
+                    <input id="checkoutCardExpiry" placeholder="MM/YY" />
+                    <input id="checkoutCardCvv" type="password" placeholder="CVV" />
+                </div>
+                <div class="checkout-note">
+                    Best practice: guest checkout is common. In this demo, guest checkout is supported by creating a lightweight account behind the scenes because the current backend still requires a user id for order creation.
+                </div>
+            </div>
+        </div>
+
+        <aside class="checkout-side">
+            <div class="checkout-side-card">
+                <h3>Order summary</h3>
+                <p id="checkoutSummaryText">1 item ready</p>
+                <div class="order-line">
+                    <span>Subtotal</span>
+                    <span id="checkoutSubtotal">$0.00</span>
+                </div>
+                <div class="order-line">
+                    <span>Shipping</span>
+                    <span>Calculated at checkout</span>
+                </div>
+                <div class="order-line">
+                    <span>Taxes</span>
+                    <span>Calculated at checkout</span>
+                </div>
+                <div class="order-line total">
+                    <span>Estimated total</span>
+                    <span id="checkoutTotal">$0.00</span>
+                </div>
+                <div class="checkout-actions">
+                    <button class="primary" onclick="placeOrder()">Place order</button>
+                    <button class="secondary" onclick="openLoginModal()">Sign in instead</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+</section>
+
+<section class="orders-page" id="ordersPage">
+    <div class="orders-hero">
+        <div>
+            <h1>My orders</h1>
+            <p>Review the orders already placed with this account.</p>
+        </div>
+        <button class="ghost-btn" onclick="closeOrdersPage()">Back to shopping</button>
+    </div>
+    <div class="orders-list" id="ordersList"></div>
+</section>
 
 <aside class="drawer" id="cartDrawer">
     <div class="drawer-head">
@@ -774,42 +1174,6 @@
     </div>
 </div>
 
-<div class="modal-wrap" id="checkoutModal">
-    <div class="modal">
-        <div class="modal-head">
-            <div>
-                <h2>Checkout</h2>
-                <p>Review the current order and complete payment.</p>
-            </div>
-            <div class="close-light" onclick="closeModal('checkoutModal')">&times;</div>
-        </div>
-
-        <div class="account-summary" id="checkoutUserSummary">
-            <strong>Account</strong>
-            Sign in to continue checkout.
-        </div>
-
-        <div class="checkout-card" id="checkoutOrderSummary">
-            <strong>Order</strong>
-            No order has been created yet.
-        </div>
-
-        <div class="checkout-card" id="checkoutPaymentSummary">
-            <strong>Payment</strong>
-            Payment has not been submitted yet.
-        </div>
-
-        <div class="notice hidden" id="checkoutNotice"></div>
-
-        <div class="modal-actions">
-            <button class="primary" id="payNowBtn" onclick="payAndMarkOrder()">Pay now</button>
-            <button class="secondary" onclick="updateCurrentOrder()">Add 1 more item</button>
-            <button class="secondary" onclick="cancelOrder()">Cancel order</button>
-            <button class="secondary" onclick="refundPayment()">Refund payment</button>
-        </div>
-    </div>
-</div>
-
 <script>
 const USER_URL = "http://localhost:8081";
 const ITEM_URL = "http://localhost:8082";
@@ -830,13 +1194,20 @@ let currentUser = null;
 let currentOrder = null;
 let currentPayment = null;
 let hasAutoSeeded = false;
+let messageTimer = null;
 
 function showToast(message, type = "info") {
     const bar = document.getElementById("messageBar");
     const text = document.getElementById("messageText");
+    if (messageTimer) {
+        clearTimeout(messageTimer);
+    }
     bar.classList.remove("info", "success", "error");
     bar.classList.add("show", type);
     text.textContent = message;
+    messageTimer = setTimeout(() => {
+        hideMessage();
+    }, 2600);
 }
 
 function hideMessage() {
@@ -870,9 +1241,9 @@ function closeBackdrop() {
 function closeAllOverlays() {
     closeBackdrop();
     closeCartDrawer();
+    closeAccountMenu();
     closeModal("registerModal", false);
     closeModal("loginModal", false);
-    closeModal("checkoutModal", false);
 }
 
 function openModal(id) {
@@ -896,9 +1267,46 @@ function openLoginModal() {
     openModal("loginModal");
 }
 
-function openCheckoutModal() {
-    syncCheckoutSummary();
-    openModal("checkoutModal");
+function openCheckoutFromMenu() {
+    closeAccountMenu();
+    openCheckoutPage();
+}
+
+function openOrdersFromMenu() {
+    closeAccountMenu();
+    openOrdersPage();
+}
+
+function openCheckoutPage() {
+    syncCheckoutPage();
+    document.getElementById("checkoutPage").classList.add("open");
+    document.getElementById("ordersPage").classList.remove("open");
+    document.querySelector(".page").classList.add("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function closeCheckoutPage() {
+    document.getElementById("checkoutPage").classList.remove("open");
+    document.querySelector(".page").classList.remove("hidden");
+}
+
+async function openOrdersPage() {
+    if (!currentUser || !currentUser.id || currentUser.id === "unknown") {
+        showToast("Please sign in to view your orders.", "error");
+        openLoginModal();
+        return;
+    }
+
+    document.getElementById("checkoutPage").classList.remove("open");
+    document.getElementById("ordersPage").classList.add("open");
+    document.querySelector(".page").classList.add("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    await loadUserOrders();
+}
+
+function closeOrdersPage() {
+    document.getElementById("ordersPage").classList.remove("open");
+    document.querySelector(".page").classList.remove("hidden");
 }
 
 function openCartDrawer() {
@@ -909,6 +1317,32 @@ function openCartDrawer() {
 
 function closeCartDrawer() {
     document.getElementById("cartDrawer").classList.remove("open");
+}
+
+function closeAccountMenu() {
+    document.getElementById("accountMenu").classList.remove("open");
+}
+
+function handleAccountClick(event) {
+    event.stopPropagation();
+    if (currentUser && currentUser.username) {
+        const menu = document.getElementById("accountMenu");
+        menu.classList.toggle("open");
+        return;
+    }
+    openLoginModal();
+}
+
+function signOut() {
+    token = "";
+    currentUser = null;
+    currentOrder = null;
+    currentPayment = null;
+    closeOrdersPage();
+    closeAccountMenu();
+    updateAccountUi();
+    syncCheckoutPage();
+    showToast("Signed out successfully.", "info");
 }
 
 function updateAccountUi() {
@@ -957,7 +1391,7 @@ function renderItems(items) {
                 <div><strong>${item.name}</strong></div>
                 <div class="meta">UPC ${item.upc || "N/A"}</div>
                 <div class="inventory">Inventory: ${item.inventory}</div>
-                <button onclick="addToCart(${item.id})">Add to cart</button>
+                <button onclick='addToCart(${JSON.stringify(item.id)})'>Add to cart</button>
             </div>
         </article>
     `).join("");
@@ -983,36 +1417,72 @@ function renderCart() {
     updateCartHeader();
 }
 
-function syncCheckoutSummary() {
-    const userSummary = document.getElementById("checkoutUserSummary");
-    const orderSummary = document.getElementById("checkoutOrderSummary");
-    const paymentSummary = document.getElementById("checkoutPaymentSummary");
-    const notice = document.getElementById("checkoutNotice");
+function checkoutSubtotal() {
+    return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+}
 
-    userSummary.innerHTML = currentUser
-        ? `<strong>Account</strong>${currentUser.username} - ${currentUser.email}`
-        : `<strong>Account</strong>Sign in to continue checkout.`;
+function syncCheckoutPage() {
+    document.getElementById("checkoutEmail").value = currentUser?.email || "";
+    document.getElementById("checkoutUsername").value = currentUser?.username || "";
+    document.getElementById("checkoutShipping").value = currentUser?.shippingAddress || "";
+    document.getElementById("checkoutBilling").value = currentUser?.billingAddress || "";
+    document.getElementById("checkoutCardName").value = currentUser?.username || "";
+    document.getElementById("checkoutCardNumber").value = "";
+    document.getElementById("checkoutCardExpiry").value = "";
+    document.getElementById("checkoutCardCvv").value = "";
 
-    orderSummary.innerHTML = currentOrder
-        ? `<strong>Order</strong>Order #${currentOrder.id} | ${currentOrder.status} | Qty ${currentOrder.quantity} | ${formatPrice(currentOrder.totalPrice)}`
-        : `<strong>Order</strong>No order has been created yet.`;
+    document.getElementById("checkoutSummaryText").textContent = `${cart.length} item${cart.length === 1 ? "" : "s"} ready`;
+    document.getElementById("checkoutSubtotal").textContent = formatPrice(checkoutSubtotal());
+    document.getElementById("checkoutTotal").textContent = formatPrice(checkoutSubtotal());
 
-    paymentSummary.innerHTML = currentPayment
-        ? `<strong>Payment</strong>Payment #${currentPayment.id} | ${currentPayment.status} | ${formatPrice(currentPayment.amount)}`
-        : `<strong>Payment</strong>Payment has not been submitted yet.`;
-
-    document.getElementById("payNowBtn").disabled = !!(currentOrder && currentOrder.status === "PAID");
-
-    if (currentOrder && currentOrder.status === "CANCELLED") {
-        notice.classList.remove("hidden");
-        notice.textContent = "The order is cancelled. If a payment was submitted, you can still refund it here.";
-    } else if (currentOrder && currentOrder.status === "PAID") {
-        notice.classList.remove("hidden");
-        notice.textContent = "Payment completed successfully. You can still add quantity, cancel, or refund if needed for the demo.";
-    } else {
-        notice.classList.add("hidden");
-        notice.textContent = "";
+    const list = document.getElementById("checkoutItems");
+    if (!cart.length) {
+        list.innerHTML = '<div class="checkout-card" style="color:#111827;">Your cart is empty.</div>';
+        return;
     }
+    list.innerHTML = cart.map((item, index) => `
+        <div class="checkout-item">
+            <div class="checkout-item-image">
+                <img src="${productImage(item, index)}" alt="${item.name}" />
+            </div>
+            <div>
+                <strong>${item.name}</strong>
+                <div class="muted">Quantity: ${item.qty}</div>
+                <div class="muted">Ready for checkout</div>
+            </div>
+            <div class="checkout-item-price">${formatPrice(item.price * item.qty)}</div>
+        </div>
+    `).join("");
+}
+
+async function loadUserOrders() {
+    const res = await fetch(`${ORDER_URL}/orders/user/${currentUser.id}`);
+    const data = await parseResponse(res);
+    const list = document.getElementById("ordersList");
+
+    if (!Array.isArray(data)) {
+        list.innerHTML = '<div class="checkout-card" style="color:#111827;">Unable to load orders right now.</div>';
+        show(data);
+        return;
+    }
+
+    if (!data.length) {
+        list.innerHTML = '<div class="checkout-card" style="color:#111827;">No orders have been placed yet.</div>';
+        return;
+    }
+
+    list.innerHTML = data.map(order => `
+        <div class="order-record">
+            <strong>Order #${order.id}</strong>
+            <div class="order-status">${order.status}</div>
+            <div class="order-meta">
+                <span>Item ID: ${order.itemId}</span>
+                <span>Quantity: ${order.quantity}</span>
+                <span>Total: ${formatPrice(order.totalPrice)}</span>
+            </div>
+            <div class="muted">Created at: ${order.createdAt || "N/A"}</div>
+        </div>
+    `).join("");
 }
 
 function filterProducts() {
@@ -1061,7 +1531,7 @@ async function register() {
         currentUser = data;
         document.getElementById("loginEmail").value = data.email;
         updateAccountUi();
-        syncCheckoutSummary();
+        syncCheckoutPage();
         closeModal("registerModal");
         showToast("Account created successfully.", "success");
         return;
@@ -1089,7 +1559,7 @@ async function login() {
     currentUser = data.user;
 
     updateAccountUi();
-    syncCheckoutSummary();
+    syncCheckoutPage();
     closeModal("loginModal");
     showToast("Signed in successfully.", "success");
 }
@@ -1167,14 +1637,8 @@ function clearCart() {
     showToast("Cart cleared.", "info");
 }
 
-async function createOrderFromItem(itemId, qty) {
-    if (!currentUser || !currentUser.id || currentUser.id === "unknown") {
-        openLoginModal();
-        showToast("Please sign in before checking out.", "error");
-        return null;
-    }
-
-    const res = await fetch(`${ORDER_URL}/orders?userId=${currentUser.id}&itemId=${itemId}&qty=${qty}`, {
+async function createOrderFromItem(userId, itemId, qty) {
+    const res = await fetch(`${ORDER_URL}/orders?userId=${userId}&itemId=${itemId}&qty=${qty}`, {
         method: "POST"
     });
     const data = await parseResponse(res);
@@ -1182,7 +1646,6 @@ async function createOrderFromItem(itemId, qty) {
     if (data && data.id) {
         currentOrder = data;
         currentPayment = null;
-        syncCheckoutSummary();
         await loadItems();
         return data;
     }
@@ -1196,69 +1659,27 @@ async function checkoutFirstItem() {
         showToast("Your cart is empty.", "error");
         return;
     }
-
-    const first = cart[0];
-    const order = await createOrderFromItem(first.id, first.qty);
-    if (order && order.id) {
-        cart.shift();
-        renderCart();
-        openCheckoutModal();
-        showToast("Order created. You can complete payment now.", "success");
-    }
+    closeCartDrawer();
+    closeBackdrop();
+    openCheckoutPage();
 }
 
-async function updateCurrentOrder() {
-    if (!currentOrder) {
-        showToast("Create an order first.", "error");
-        return;
-    }
-
-    const newQty = currentOrder.quantity + 1;
-    const res = await fetch(`${ORDER_URL}/orders/${currentOrder.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quantity: newQty })
-    });
-    const data = await parseResponse(res);
-
-    if (data && data.id) {
-        currentOrder = data;
-        syncCheckoutSummary();
-        await loadItems();
-        showToast("Order quantity updated.", "success");
-        return;
-    }
-
-    show(data);
-}
-
-async function submitPayment() {
-    if (!currentOrder || !currentUser || !currentUser.id || currentUser.id === "unknown") {
-        showToast("Create an order first.", "error");
-        return null;
-    }
-
-    if (!currentUser.paymentMethod || !currentUser.paymentMethod.trim()) {
-        showToast("Please add a payment method when creating your account.", "error");
-        return null;
-    }
-
+async function submitPayment(order, paymentMethod) {
     const res = await fetch(`${PAYMENT_URL}/payments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            orderId: currentOrder.id,
+            orderId: order.id,
             userId: currentUser.id,
-            amount: currentOrder.totalPrice,
-            paymentMethod: currentUser.paymentMethod,
-            idempotencyKey: `pay-order-${currentOrder.id}`
+            amount: order.totalPrice,
+            paymentMethod,
+            idempotencyKey: `pay-order-${order.id}`
         })
     });
     const data = await parseResponse(res);
 
     if (data && data.id) {
         currentPayment = data;
-        syncCheckoutSummary();
         return data;
     }
 
@@ -1266,73 +1687,107 @@ async function submitPayment() {
     return null;
 }
 
-async function payAndMarkOrder() {
-    if (!currentOrder) {
-        showToast("Create an order first.", "error");
-        return;
+async function ensureCheckoutUser() {
+    if (currentUser && currentUser.id && currentUser.id !== "unknown") {
+        return currentUser;
     }
 
-    const payment = await submitPayment();
-    if (!payment || !payment.id) {
-        return;
+    const email = document.getElementById("checkoutEmail").value.trim();
+    const username = document.getElementById("checkoutUsername").value.trim() || email.split("@")[0];
+    const shippingAddress = document.getElementById("checkoutShipping").value.trim();
+    const billingAddress = document.getElementById("checkoutBilling").value.trim();
+    const paymentMethod = buildPaymentMethod();
+
+    if (!email || !shippingAddress || !billingAddress || !paymentMethod) {
+        showToast("Please complete contact, address, and payment information.", "error");
+        return null;
     }
 
-    const res = await fetch(`${ORDER_URL}/orders/${currentOrder.id}/pay`, { method: "POST" });
+    const res = await fetch(`${USER_URL}/users/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            email,
+            username,
+            password: `guest-${Date.now()}`,
+            shippingAddress,
+            billingAddress,
+            paymentMethod
+        })
+    });
     const data = await parseResponse(res);
-
     if (data && data.id) {
-        currentOrder = data;
-        syncCheckoutSummary();
-        showToast("Payment completed.", "success");
-        return;
+        currentUser = data;
+        updateAccountUi();
+        return data;
     }
-
-    show(data);
+    showToast((data && data.message) || "Unable to create guest checkout account. Please sign in.", "error");
+    return null;
 }
 
-async function cancelOrder() {
-    if (!currentOrder) {
-        showToast("No order to cancel.", "error");
-        return;
+function buildPaymentMethod() {
+    const name = document.getElementById("checkoutCardName").value.trim();
+    const number = document.getElementById("checkoutCardNumber").value.trim();
+    const expiry = document.getElementById("checkoutCardExpiry").value.trim();
+    const cvv = document.getElementById("checkoutCardCvv").value.trim();
+
+    if (!name || !number || !expiry || !cvv) {
+        return "";
     }
 
-    const res = await fetch(`${ORDER_URL}/orders/${currentOrder.id}/cancel`, { method: "POST" });
-    const data = await parseResponse(res);
-
-    if (data && data.id) {
-        currentOrder = data;
-        syncCheckoutSummary();
-        await loadItems();
-        showToast("Order cancelled.", "info");
-        return;
-    }
-
-    show(data);
+    const last4 = number.replace(/\s+/g, "").slice(-4);
+    return `${name} - card ending ${last4} - exp ${expiry}`;
 }
 
-async function refundPayment() {
-    if (!currentPayment) {
-        showToast("No payment to refund.", "error");
+async function placeOrder() {
+    if (!cart.length) {
+        showToast("Your cart is empty.", "error");
         return;
     }
 
-    const res = await fetch(`${PAYMENT_URL}/payments/${currentPayment.id}/refund`, { method: "POST" });
-    const data = await parseResponse(res);
-
-    if (data && data.id) {
-        currentPayment = data;
-        syncCheckoutSummary();
-        showToast("Payment refunded.", "success");
+    const user = await ensureCheckoutUser();
+    if (!user) {
         return;
     }
 
-    show(data);
+    const paymentMethod = buildPaymentMethod();
+    if (!paymentMethod) {
+        showToast("Please complete payment information.", "error");
+        return;
+    }
+
+    for (const item of cart) {
+        const order = await createOrderFromItem(user.id, item.id, item.qty);
+        if (!order || !order.id) {
+            return;
+        }
+        currentOrder = order;
+        const payment = await submitPayment(order, paymentMethod);
+        if (!payment || !payment.id) {
+            return;
+        }
+        const res = await fetch(`${ORDER_URL}/orders/${order.id}/pay`, { method: "POST" });
+        const paidOrder = await parseResponse(res);
+        if (!paidOrder || !paidOrder.id) {
+            showToast((paidOrder && paidOrder.message) || "Unable to mark order as paid.", "error");
+            return;
+        }
+        currentOrder = paidOrder;
+    }
+
+    cart = [];
+    renderCart();
+    syncCheckoutPage();
+    closeCheckoutPage();
+    showToast("Order placed successfully.", "success");
 }
 
 updateAccountUi();
 renderCart();
-syncCheckoutSummary();
+syncCheckoutPage();
 loadItems();
+
+document.addEventListener("click", closeAccountMenu);
 </script>
 </body>
 </html>

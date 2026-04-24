@@ -21,11 +21,11 @@ public class ItemService {
         return itemRepository.findAll();
     }
 
-    public Item getItem(Long id) {
+    public Item getItem(String id) {
         return itemRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Item not found"));
     }
 
-    public Item decreaseInventory(Long id, int qty) {
+    public Item decreaseInventory(String id, int qty) {
         Item item = getItem(id);
         if (qty <= 0) {
             throw new IllegalArgumentException("Quantity must be positive");
@@ -37,7 +37,7 @@ public class ItemService {
         return itemRepository.save(item);
     }
 
-    public Item increaseInventory(Long id, int qty) {
+    public Item increaseInventory(String id, int qty) {
         Item item = getItem(id);
         if (qty <= 0) {
             throw new IllegalArgumentException("Quantity must be positive");
