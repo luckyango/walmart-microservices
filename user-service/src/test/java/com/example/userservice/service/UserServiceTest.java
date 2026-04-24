@@ -4,9 +4,11 @@ import com.example.userservice.model.AppUser;
 import com.example.userservice.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -21,6 +23,9 @@ class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private UserService userService;
 
@@ -28,18 +33,21 @@ class UserServiceTest {
     void registerShouldPersistValidUser() {
         AppUser user = buildUser();
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
+        when(passwordEncoder.encode("123456")).thenReturn("encoded-password");
         when(userRepository.save(any(AppUser.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         AppUser saved = userService.register(user);
 
         assertEquals("nova@test.com", saved.getEmail());
-        verify(userRepository).save(user);
+        assertEquals("encoded-password", saved.getPassword());
     }
 
     @Test
     void loginShouldRejectWrongPassword() {
         AppUser user = buildUser();
+        user.setPassword("encoded-password");
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("wrong", "encoded-password")).thenReturn(false);
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                 () -> userService.login(user.getEmail(), "wrong"));
@@ -61,6 +69,19 @@ class UserServiceTest {
                 () -> userService.updateUser(1L, existing));
 
         assertEquals("Email already exists", ex.getMessage());
+    }
+
+    @Test
+    void loginShouldUpgradeLegacyPlainTextPassword() {
+        AppUser user = buildUser();
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode("123456")).thenReturn("encoded-password");
+
+        userService.login(user.getEmail(), "123456");
+
+        ArgumentCaptor<AppUser> captor = ArgumentCaptor.forClass(AppUser.class);
+        verify(userRepository).save(captor.capture());
+        assertEquals("encoded-password", captor.getValue().getPassword());
     }
 
     private AppUser buildUser() {

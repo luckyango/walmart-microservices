@@ -1,30 +1,46 @@
 package com.example.userservice.service;
 
+import com.example.userservice.dto.LoginResponse;
 import com.example.userservice.model.AppUser;
 import com.example.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public AppUser register(AppUser user) {
         validateUser(user);
         userRepository.findByEmail(user.getEmail()).ifPresent(existing -> {
             throw new IllegalArgumentException("Email already exists");
         });
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
-    public String login(String email, String password) {
+    public LoginResponse login(String email, String password) {
         AppUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        if (!user.getPassword().equals(password)) {
+
+        boolean isHashedPassword = user.getPassword() != null && user.getPassword().startsWith("$2");
+        boolean matches = isHashedPassword
+                ? passwordEncoder.matches(password, user.getPassword())
+                : user.getPassword().equals(password);
+
+        if (!matches) {
             throw new IllegalArgumentException("Invalid password");
         }
-        return "demo-token-user-" + user.getId();
+
+        if (!isHashedPassword) {
+            user.setPassword(passwordEncoder.encode(password));
+            userRepository.save(user);
+        }
+
+        return new LoginResponse("demo-token-user-" + user.getId(), user);
     }
 
     public AppUser getUser(Long id) {
@@ -43,7 +59,7 @@ public class UserService {
 
         existing.setEmail(request.getEmail());
         existing.setUsername(request.getUsername());
-        existing.setPassword(request.getPassword());
+        existing.setPassword(passwordEncoder.encode(request.getPassword()));
         existing.setShippingAddress(request.getShippingAddress());
         existing.setBillingAddress(request.getBillingAddress());
         existing.setPaymentMethod(request.getPaymentMethod());

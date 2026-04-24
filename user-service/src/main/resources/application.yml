@@ -1,16 +1,22 @@
 server:
   port: 8081
+
 spring:
+  application:
+    name: account-service
   datasource:
-    url: jdbc:h2:mem:userdb
-    driver-class-name: org.h2.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/walmart_account_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456!
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-  h2:
-    console:
-      enabled: true
+    properties:
+      hibernate:
+        format_sql: true
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

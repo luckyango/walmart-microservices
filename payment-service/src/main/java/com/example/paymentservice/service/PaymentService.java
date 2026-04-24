@@ -24,10 +24,10 @@ public class PaymentService {
                     payment.setAmount(request.getAmount());
                     payment.setPaymentMethod(request.getPaymentMethod());
                     payment.setIdempotencyKey(request.getIdempotencyKey());
-                    payment.setStatus("SUBMITTED");
+                    payment.setStatus("PAID");
                     payment.setCreatedAt(LocalDateTime.now());
                     payment.setUpdatedAt(LocalDateTime.now());
-                    System.out.println("[EVENT] PaymentSubmitted: orderId=" + request.getOrderId());
+                    System.out.println("[EVENT] PaymentPaid: orderId=" + request.getOrderId());
                     return paymentRepository.save(payment);
                 });
     }
@@ -37,8 +37,8 @@ public class PaymentService {
         if ("REFUNDED".equals(payment.getStatus())) {
             return payment;
         }
-        if (!"SUBMITTED".equals(payment.getStatus())) {
-            throw new IllegalStateException("Only SUBMITTED payment can be refunded");
+        if (!"PAID".equals(payment.getStatus())) {
+            throw new IllegalStateException("Only PAID payment can be refunded");
         }
         payment.setStatus("REFUNDED");
         payment.setUpdatedAt(LocalDateTime.now());

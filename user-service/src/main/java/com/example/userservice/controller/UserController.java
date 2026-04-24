@@ -1,5 +1,6 @@
 package com.example.userservice.controller;
 
+import com.example.userservice.dto.LoginResponse;
 import com.example.userservice.model.AppUser;
 import com.example.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String email, @RequestParam String password) {
+    public LoginResponse login(@RequestParam("email") String email, @RequestParam("password") String password) {
         return userService.login(email, password);
     }
 

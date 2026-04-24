@@ -16,34 +16,34 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public CustomerOrder createOrder(@RequestParam Long userId,
-                                     @RequestParam Long itemId,
-                                     @RequestParam int qty) {
+    public CustomerOrder createOrder(@RequestParam("userId") Long userId,
+                                     @RequestParam("itemId") Long itemId,
+                                     @RequestParam("qty") int qty) {
         return orderService.createOrder(userId, itemId, qty);
     }
 
     @PostMapping("/{id}/pay")
-    public CustomerOrder payOrder(@PathVariable Long id) {
+    public CustomerOrder payOrder(@PathVariable("id") Long id) {
         return orderService.payOrder(id);
     }
 
     @PutMapping("/{id}")
-    public CustomerOrder updateOrder(@PathVariable Long id, @RequestBody UpdateOrderRequest request) {
+    public CustomerOrder updateOrder(@PathVariable("id") Long id, @RequestBody UpdateOrderRequest request) {
         return orderService.updateOrder(id, request.getQuantity());
     }
 
     @PostMapping("/{id}/cancel")
-    public CustomerOrder cancelOrder(@PathVariable Long id) {
+    public CustomerOrder cancelOrder(@PathVariable("id") Long id) {
         return orderService.cancelOrder(id);
     }
 
     @GetMapping("/{id}")
-    public CustomerOrder getOrder(@PathVariable Long id) {
+    public CustomerOrder getOrder(@PathVariable("id") Long id) {
         return orderService.getOrder(id);
     }
 
     @GetMapping("/user/{userId}")
-    public List<CustomerOrder> getOrdersByUser(@PathVariable Long userId) {
+    public List<CustomerOrder> getOrdersByUser(@PathVariable("userId") Long userId) {
         return orderService.getOrdersByUser(userId);
     }
 }

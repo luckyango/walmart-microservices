@@ -25,17 +25,17 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public Item getItem(@PathVariable Long id) {
+    public Item getItem(@PathVariable("id") Long id) {
         return itemService.getItem(id);
     }
 
     @PostMapping("/{id}/decrease")
-    public Item decreaseInventory(@PathVariable Long id, @RequestParam int qty) {
+    public Item decreaseInventory(@PathVariable("id") Long id, @RequestParam("qty") int qty) {
         return itemService.decreaseInventory(id, qty);
     }
 
     @PostMapping("/{id}/increase")
-    public Item increaseInventory(@PathVariable Long id, @RequestParam int qty) {
+    public Item increaseInventory(@PathVariable("id") Long id, @RequestParam("qty") int qty) {
         return itemService.increaseInventory(id, qty);
     }
 }

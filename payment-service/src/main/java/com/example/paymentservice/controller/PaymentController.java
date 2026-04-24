@@ -19,12 +19,12 @@ public class PaymentController {
     }
 
     @PostMapping("/{id}/refund")
-    public Payment refundPayment(@PathVariable Long id) {
+    public Payment refundPayment(@PathVariable("id") Long id) {
         return paymentService.refundPayment(id);
     }
 
     @GetMapping("/{id}")
-    public Payment getPayment(@PathVariable Long id) {
+    public Payment getPayment(@PathVariable("id") Long id) {
         return paymentService.getPayment(id);
     }
 }
