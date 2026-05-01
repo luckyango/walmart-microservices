@@ -24,4 +24,7 @@ springdoc:
 auth:
   jwt:
     secret: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
-    expiration-ms: 86400000
+    access-expiration-ms: 900000
+    refresh-expiration-ms: 604800000
+  cookie:
+    name: refresh_token

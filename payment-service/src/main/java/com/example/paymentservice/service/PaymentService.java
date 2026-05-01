@@ -1,6 +1,7 @@
 package com.example.paymentservice.service;
 
 import com.example.paymentservice.dto.CreatePaymentRequest;
+import com.example.paymentservice.event.PaymentEventPublisher;
 import com.example.paymentservice.model.Payment;
 import com.example.paymentservice.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class PaymentService {
     private final PaymentRepository paymentRepository;
+    private final PaymentEventPublisher paymentEventPublisher;
 
     public Payment submitPayment(CreatePaymentRequest request) {
         validateCreateRequest(request);
@@ -28,7 +30,9 @@ public class PaymentService {
                     payment.setCreatedAt(LocalDateTime.now());
                     payment.setUpdatedAt(LocalDateTime.now());
                     System.out.println("[EVENT] PaymentPaid: orderId=" + request.getOrderId());
-                    return paymentRepository.save(payment);
+                    Payment saved = paymentRepository.save(payment);
+                    paymentEventPublisher.publishPaymentPaid(saved);
+                    return saved;
                 });
     }
 
@@ -43,7 +47,9 @@ public class PaymentService {
         payment.setStatus("REFUNDED");
         payment.setUpdatedAt(LocalDateTime.now());
         System.out.println("[EVENT] PaymentRefunded: paymentId=" + paymentId);
-        return paymentRepository.save(payment);
+        Payment saved = paymentRepository.save(payment);
+        paymentEventPublisher.publishPaymentRefunded(saved);
+        return saved;
     }
 
     public Payment getPayment(Long paymentId) {

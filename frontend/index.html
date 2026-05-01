@@ -143,7 +143,7 @@
             align-items: center;
             min-height: 56px;
             border-radius: 999px;
-            background: #252525;
+            background: white;
             padding: 8px 10px 8px 24px;
         }
 
@@ -708,12 +708,23 @@
             font-size: 14px;
         }
 
+        .inventory.pending {
+            color: #f59e0b;
+        }
+
         .product-card button {
             margin-top: auto;
             background: white;
             color: #111827;
             padding: 12px 14px;
             border: 1px solid #111827;
+        }
+
+        .product-card button:disabled {
+            background: #f3f4f6;
+            color: #9ca3af;
+            border-color: #d1d5db;
+            cursor: not-allowed;
         }
 
         .drawer {
@@ -732,6 +743,128 @@
 
         .drawer.open {
             right: 0;
+        }
+
+        .chat-launcher {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            width: 58px;
+            height: 58px;
+            border-radius: 999px;
+            border: 0;
+            background: #0a5fe0;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 18px 42px rgba(10, 95, 224, 0.28);
+            z-index: 80;
+        }
+
+        .chat-panel {
+            position: fixed;
+            right: 24px;
+            bottom: 96px;
+            width: min(380px, calc(100vw - 24px));
+            height: 520px;
+            background: #fff;
+            border: 1px solid #dbe5f3;
+            box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18);
+            display: none;
+            flex-direction: column;
+            z-index: 85;
+        }
+
+        .chat-panel.open {
+            display: flex;
+        }
+
+        .chat-head {
+            background: #0a5fe0;
+            color: #fff;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-head h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .chat-head p {
+            margin: 4px 0 0;
+            font-size: 12px;
+            opacity: 0.88;
+        }
+
+        .chat-close {
+            background: transparent;
+            border: 0;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background: #f8fbff;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-bubble {
+            max-width: 82%;
+            padding: 12px 14px;
+            border-radius: 18px;
+            line-height: 1.45;
+            white-space: pre-wrap;
+            font-size: 14px;
+        }
+
+        .chat-bubble.user {
+            align-self: flex-end;
+            background: #0a5fe0;
+            color: #fff;
+        }
+
+        .chat-bubble.bot {
+            align-self: flex-start;
+            background: #fff;
+            color: #111827;
+            border: 1px solid #dbe5f3;
+        }
+
+        .chat-compose {
+            border-top: 1px solid #e5eef8;
+            padding: 14px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            background: #fff;
+        }
+
+        .chat-compose textarea {
+            resize: none;
+            min-height: 76px;
+            border: 1px solid #dbe5f3;
+            padding: 12px;
+            font: inherit;
+        }
+
+        .chat-compose button {
+            align-self: end;
+            border: 0;
+            background: #0a5fe0;
+            color: #fff;
+            padding: 12px 18px;
+            font-weight: 700;
+            cursor: pointer;
         }
 
         .drawer-head {
@@ -1171,6 +1304,23 @@
     </div>
 </aside>
 
+<button class="chat-launcher" onclick="toggleChatPanel()">AI</button>
+
+<section class="chat-panel" id="chatPanel">
+    <div class="chat-head">
+        <div>
+            <h3>AI shopping assistant</h3>
+            <p>Ask me to find products, check orders, or place an order.</p>
+        </div>
+        <button class="chat-close" onclick="closeChatPanel()">&times;</button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-compose">
+        <textarea id="chatInput" placeholder="Type a shopping request..."></textarea>
+        <button onclick="sendChatMessage()">Send</button>
+    </div>
+</section>
+
 <div class="modal-wrap" id="registerModal">
     <div class="modal">
         <div class="modal-head">
@@ -1223,10 +1373,11 @@
 </div>
 
 <script>
-const USER_URL = "http://localhost:8080/api/account/users";
-const ITEM_URL = "http://localhost:8080/api/items";
-const ORDER_URL = "http://localhost:8080/api/orders";
-const PAYMENT_URL = "http://localhost:8080/api/payments";
+  const USER_URL = "http://localhost:8080/api/account/users";
+  const AI_URL = "http://localhost:8080/api/ai/assistant";
+  const ITEM_URL = "http://localhost:8080/api/items";
+  const ORDER_URL = "http://localhost:8080/api/orders";
+  const PAYMENT_URL = "http://localhost:8080/api/payments";
 
 function buildToyImage(label, background, accent, ribbon) {
     const svg = `
@@ -1257,12 +1408,12 @@ function buildToyImage(label, background, accent, ribbon) {
 }
 
 const DEMO_ITEMS = [
-    { name: "Buttercup Duck Plush", upc: "UPC-2001", price: 17.99, inventory: 14, pictureUrl: "images/item1.png" },
-    { name: "Honey Bear Plush", upc: "UPC-2002", price: 24.99, inventory: 16, pictureUrl: "images/item2.png" },
-    { name: "Cloud Bunny Plush", upc: "UPC-2003", price: 22.49, inventory: 19, pictureUrl: "images/item3.png" },
-    { name: "Peach Panda Plush", upc: "UPC-2004", price: 26.99, inventory: 11, pictureUrl: "images/item4.png" },
-    { name: "Mint Dino Plush", upc: "UPC-2005", price: 20.99, inventory: 18, pictureUrl: "images/item5.png" },
-    { name: "Star Kitty Plush", upc: "UPC-2006", price: 19.99, inventory: 15, pictureUrl: "images/item6.png" }
+    { name: "Stuffing Squeak Duck Toy", upc: "UPC-2001", price: 17.99, inventory: 14, pictureUrl: "images/item1.png" },
+    { name: "Straw Tote Bag", upc: "UPC-2002", price: 24.99, inventory: 16, pictureUrl: "images/item2.png" },
+    { name: "Artificial Flowers", upc: "UPC-2003", price: 22.49, inventory: 19, pictureUrl: "images/item3.png" },
+    { name: "Soft Bunny Plush", upc: "UPC-2004", price: 26.99, inventory: 11, pictureUrl: "images/item4.png" },
+    { name: "Jade Leaf Match", upc: "UPC-2005", price: 20.99, inventory: 18, pictureUrl: "images/item5.png" },
+    { name: "Stoneware Pitcher", upc: "UPC-2006", price: 19.99, inventory: 15, pictureUrl: "images/item6.png" }
 ];
 
 const DEMO_ITEM_MAP = Object.fromEntries(DEMO_ITEMS.map(item => [item.upc, item]));
@@ -1279,9 +1430,43 @@ let currentOrder = null;
 let currentPayment = null;
 let hasAutoSeeded = false;
 let messageTimer = null;
+const AUTH_STORAGE_KEY = "wm_auth_state";
+const DEFAULT_CHAT_MESSAGES = [
+    {
+        role: "bot",
+        text: "Hi! Try asking:\n- \"Show me plush products\"\n- \"Check my orders\"\n- \"Order 1 duck plush\""
+    }
+];
 
 function isSignedIn() {
     return Boolean(token && currentUser && currentUser.id);
+}
+
+function saveAuthState() {
+    if (token && currentUser && currentUser.id) {
+        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({
+            token,
+            currentUser
+        }));
+        return;
+    }
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+}
+
+function restoreAuthState() {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!raw) {
+        return;
+    }
+    try {
+        const parsed = JSON.parse(raw);
+        token = parsed?.token || "";
+        currentUser = parsed?.currentUser || null;
+    } catch (error) {
+        token = "";
+        currentUser = null;
+        localStorage.removeItem(AUTH_STORAGE_KEY);
+    }
 }
 
 function authHeaders(extra = {}) {
@@ -1290,6 +1475,49 @@ function authHeaders(extra = {}) {
         headers.Authorization = `Bearer ${token}`;
     }
     return headers;
+}
+
+async function refreshAccessToken() {
+    const res = await fetch(`${USER_URL}/refresh`, {
+        method: "POST",
+        credentials: "include"
+    });
+    const data = await parseResponse(res);
+    if (!res.ok || !data?.token) {
+        token = "";
+        saveAuthState();
+        return null;
+    }
+    token = data.token;
+    currentUser = data.user || currentUser;
+    saveAuthState();
+    return data;
+}
+
+async function bootstrapAuthSession() {
+    restoreAuthState();
+    const refreshed = await refreshAccessToken();
+    if (!refreshed) {
+        return token && currentUser ? { token, user: currentUser } : null;
+    }
+    return refreshed;
+}
+
+async function authFetch(url, options = {}, retry = true) {
+    const response = await fetch(url, {
+        ...options,
+        credentials: "include",
+        headers: authHeaders(options.headers || {})
+    });
+
+    if (response.status === 401 && retry) {
+        const refreshed = await refreshAccessToken();
+        if (refreshed?.token) {
+            return authFetch(url, options, false);
+        }
+    }
+
+    return response;
 }
 
 function showToast(message, type = "info") {
@@ -1316,7 +1544,7 @@ function show(data) {
         return;
     }
     if (data && data.message) {
-        showToast(data.message, data.status && data.status >= 400 ? "error" : "info");
+        showToast(toUserMessage(data), data.status && data.status >= 400 ? "error" : "info");
         return;
     }
     showToast("Action completed.", "success");
@@ -1324,6 +1552,29 @@ function show(data) {
 
 function formatPrice(value) {
     return Number(value || 0).toLocaleString("en-US", { style: "currency", currency: "USD" });
+}
+
+function toUserMessage(data, fallback = "Something went wrong. Please try again.") {
+    if (!data) {
+        return fallback;
+    }
+
+    if (typeof data === "string") {
+        return data;
+    }
+
+    const rawMessage = (data.message || "").toLowerCase();
+    if (data.status === 503) {
+        if (rawMessage.includes("item service") || rawMessage.includes("inventory service")) {
+            return "Items are temporarily unavailable right now. Please try again in a moment.";
+        }
+        if (rawMessage.includes("payment service")) {
+            return "Payment is temporarily unavailable right now. Please try again in a moment.";
+        }
+        return "A required service is temporarily unavailable. Please try again in a moment.";
+    }
+
+    return data.message || fallback;
 }
 
 function canonicalizeItem(item, index = 0) {
@@ -1366,6 +1617,10 @@ function buildDisplayCatalog(serverItems) {
         const serverItem = serverMap.get(localItem.upc);
         return serverItem ? canonicalizeItem(serverItem) : localItem;
     });
+}
+
+function isLocalPlaceholderItem(item) {
+    return Boolean(item && typeof item.id === "string" && item.id.startsWith("demo-"));
 }
 
 function openBackdrop() {
@@ -1462,6 +1717,91 @@ function closeOrdersPage() {
     document.querySelector(".page").classList.remove("hidden");
 }
 
+function toggleChatPanel() {
+    document.getElementById("chatPanel").classList.toggle("open");
+}
+
+function closeChatPanel() {
+    document.getElementById("chatPanel").classList.remove("open");
+}
+
+function getChatStorageKey() {
+    return currentUser?.id ? `wm_chat_${currentUser.id}` : "wm_chat_guest";
+}
+
+function saveChatHistory() {
+    const messages = Array.from(document.querySelectorAll("#chatMessages .chat-bubble")).map((bubble) => ({
+        role: bubble.classList.contains("user") ? "user" : "bot",
+        text: bubble.textContent
+    }));
+    localStorage.setItem(getChatStorageKey(), JSON.stringify(messages));
+}
+
+function loadChatHistory() {
+    const box = document.getElementById("chatMessages");
+    const saved = localStorage.getItem(getChatStorageKey());
+    let messages = DEFAULT_CHAT_MESSAGES;
+
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed) && parsed.length) {
+                messages = parsed;
+            }
+        } catch (error) {
+            messages = DEFAULT_CHAT_MESSAGES;
+        }
+    }
+
+    box.innerHTML = "";
+    messages.forEach((message) => appendChatBubble(message.role, message.text, false));
+    box.scrollTop = box.scrollHeight;
+}
+
+function appendChatBubble(role, text, persist = true) {
+    const box = document.getElementById("chatMessages");
+    const bubble = document.createElement("div");
+    bubble.className = `chat-bubble ${role}`;
+    bubble.textContent = text;
+    box.appendChild(bubble);
+    box.scrollTop = box.scrollHeight;
+    if (persist) {
+        saveChatHistory();
+    }
+}
+
+async function sendChatMessage() {
+    const input = document.getElementById("chatInput");
+    const message = input.value.trim();
+    if (!message) {
+        return;
+    }
+
+    appendChatBubble("user", message);
+    input.value = "";
+
+    const res = await authFetch(`${AI_URL}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            message,
+            userId: currentUser?.id || null
+        })
+    });
+
+    const data = await parseResponse(res);
+    if (!res.ok) {
+        appendChatBubble("bot", toUserMessage(data, "The AI assistant is unavailable right now."));
+        return;
+    }
+
+    appendChatBubble("bot", data.reply || "Done.");
+    await loadItems();
+    if (isSignedIn()) {
+        await loadUserOrders();
+    }
+}
+
 function openCartDrawer() {
     closeAllOverlays();
     document.getElementById("cartDrawer").classList.add("open");
@@ -1486,14 +1826,20 @@ function handleAccountClick(event) {
     openLoginModal();
 }
 
-function signOut() {
+async function signOut() {
+    await fetch(`${USER_URL}/logout`, {
+        method: "POST",
+        credentials: "include"
+    });
     token = "";
     currentUser = null;
     currentOrder = null;
     currentPayment = null;
+    saveAuthState();
     closeOrdersPage();
     closeAccountMenu();
     updateAccountUi();
+    loadChatHistory();
     syncCheckoutPage();
     showToast("Signed out successfully.", "info");
 }
@@ -1528,8 +1874,24 @@ function updateCartHeader() {
     document.getElementById("cartHeaderTotal").textContent = formatPrice(total);
 }
 
-function productImage(item, index) {
-    return item.pictureUrl || DEMO_ITEMS[index % DEMO_ITEMS.length].pictureUrl;
+function productImage(item, index = 0) {
+    if (item?.pictureUrl) {
+        return item.pictureUrl;
+    }
+
+    const matchedDemoItem =
+        (item?.upc && DEMO_ITEM_MAP[item.upc]) ||
+        storeItems.find(entry => entry.id === item?.id) ||
+        storeItems.find(entry => entry.id === item?.itemId) ||
+        storeItems.find(entry => entry.upc === item?.upc) ||
+        LOCAL_DEMO_ITEMS.find(entry => entry.id === item?.id) ||
+        LOCAL_DEMO_ITEMS.find(entry => entry.id === item?.itemId);
+
+    if (matchedDemoItem?.pictureUrl) {
+        return matchedDemoItem.pictureUrl;
+    }
+
+    return DEMO_ITEMS[index % DEMO_ITEMS.length].pictureUrl;
 }
 
 function renderItems(items) {
@@ -1552,8 +1914,8 @@ function renderItems(items) {
                 <div class="price">${formatPrice(item.price)}</div>
                 <div class="product-title"><strong>${item.name}</strong></div>
                 <div class="meta">UPC ${item.upc || "N/A"}</div>
-                <div class="inventory">Inventory: ${item.inventory}</div>
-                <button onclick='addToCart(${JSON.stringify(item.id)})'>Add to cart</button>
+                <div class="inventory ${isLocalPlaceholderItem(item) ? "pending" : ""}">${isLocalPlaceholderItem(item) ? "Syncing product..." : `Inventory: ${item.inventory}`}</div>
+                <button ${isLocalPlaceholderItem(item) ? "disabled" : ""} onclick='addToCart(${JSON.stringify(item.id)})'>${isLocalPlaceholderItem(item) ? "Syncing..." : "Add to cart"}</button>
             </div>
         </article>
     `).join("");
@@ -1618,9 +1980,7 @@ function syncCheckoutPage() {
 }
 
 async function loadUserOrders() {
-    const res = await fetch(`${ORDER_URL}/user/${currentUser.id}`, {
-        headers: authHeaders()
-    });
+    const res = await authFetch(`${ORDER_URL}/user/${currentUser.id}`);
     const data = await parseResponse(res);
     const list = document.getElementById("ordersList");
 
@@ -1654,13 +2014,11 @@ async function loadUserOrders() {
 }
 
 async function viewOrderPayment(orderId) {
-    const res = await fetch(`${PAYMENT_URL}/order/${orderId}`, {
-        headers: authHeaders()
-    });
+    const res = await authFetch(`${PAYMENT_URL}/order/${orderId}`);
     const data = await parseResponse(res);
 
     if (!res.ok) {
-        showToast((data && data.message) || "Unable to load payment.", "error");
+        showToast(toUserMessage(data, "Unable to load payment."), "error");
         return;
     }
 
@@ -1674,14 +2032,13 @@ async function cancelOrderFromList(orderId) {
         return;
     }
 
-    const res = await fetch(`${ORDER_URL}/${orderId}/cancel`, {
-        method: "POST",
-        headers: authHeaders()
+    const res = await authFetch(`${ORDER_URL}/${orderId}/cancel`, {
+        method: "POST"
     });
     const data = await parseResponse(res);
 
     if (!res.ok) {
-        showToast((data && data.message) || "Unable to cancel order.", "error");
+        showToast(toUserMessage(data, "Unable to cancel order."), "error");
         return;
     }
 
@@ -1728,6 +2085,7 @@ async function register() {
 
     const res = await fetch(`${USER_URL}/register`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
     });
@@ -1738,6 +2096,7 @@ async function register() {
         await authenticateSilently(body.email, body.password);
         document.getElementById("loginEmail").value = data.email;
         updateAccountUi();
+        loadChatHistory();
         syncCheckoutPage();
         closeModal("registerModal");
         showToast("Account created successfully.", "success");
@@ -1756,25 +2115,30 @@ async function login() {
     }
 
     updateAccountUi();
+    loadChatHistory();
     syncCheckoutPage();
     closeModal("loginModal");
     showToast("Signed in successfully.", "success");
 }
 
 async function authenticateSilently(email, password) {
-    const res = await fetch(`${USER_URL}/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
-        method: "POST"
+    const res = await fetch(`${USER_URL}/login`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
     });
 
     const data = await parseResponse(res);
     if (!res.ok) {
-        const message = typeof data === "string" ? data : (data && data.message) || "Unable to sign in.";
+        const message = toUserMessage(data, "Unable to sign in.");
         showToast(message, "error");
         return null;
     }
 
     token = data.token;
     currentUser = data.user;
+    saveAuthState();
     return data;
 }
 
@@ -1819,21 +2183,28 @@ async function loadItems() {
         return;
     }
 
-    storeItems = buildDisplayCatalog(parsedItems);
-    const catalogUpcs = new Set(storeItems.map(item => item.upc).filter(Boolean));
-    const hasMissingSamples = DEMO_ITEMS.some(item => !catalogUpcs.has(item.upc));
+    const normalizedItems = normalizeCatalog(parsedItems);
+    const serverUpcs = new Set(normalizedItems.map(item => item.upc).filter(Boolean));
+    const hasMissingSamples = DEMO_ITEMS.some(item => !serverUpcs.has(item.upc));
 
-    if ((storeItems.length === 0 || hasMissingSamples) && !hasAutoSeeded) {
+    if ((normalizedItems.length === 0 || hasMissingSamples) && !hasAutoSeeded) {
         await seedItems();
         return;
     }
 
+    storeItems = buildDisplayCatalog(normalizedItems);
     renderItems(storeItems);
 }
 
 function addToCart(itemId) {
     const item = storeItems.find(entry => entry.id === itemId);
     if (!item) {
+        return;
+    }
+
+    if (isLocalPlaceholderItem(item)) {
+        showToast("Products are still syncing from the item service. Please wait a moment and try again.", "info");
+        loadItems();
         return;
     }
 
@@ -1866,9 +2237,8 @@ function clearCart() {
 }
 
 async function createOrderFromItem(userId, itemId, qty) {
-    const res = await fetch(`${ORDER_URL}?userId=${userId}&itemId=${itemId}&qty=${qty}`, {
-        method: "POST",
-        headers: authHeaders()
+    const res = await authFetch(`${ORDER_URL}?userId=${userId}&itemId=${itemId}&qty=${qty}`, {
+        method: "POST"
     });
     const data = await parseResponse(res);
 
@@ -1894,9 +2264,9 @@ async function checkoutFirstItem() {
 }
 
 async function submitPayment(order, paymentMethod) {
-    const res = await fetch(`${PAYMENT_URL}`, {
+    const res = await authFetch(`${PAYMENT_URL}`, {
         method: "POST",
-        headers: authHeaders({ "Content-Type": "application/json" }),
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             orderId: order.id,
             userId: currentUser.id,
@@ -1945,6 +2315,13 @@ async function placeOrder() {
         return;
     }
 
+    const placeholderItem = cart.find(item => isLocalPlaceholderItem(item));
+    if (placeholderItem) {
+        showToast("Some products are still syncing. Please refresh the catalog and try checkout again.", "error");
+        await loadItems();
+        return;
+    }
+
     const user = await ensureCheckoutUser();
     if (!user) {
         return;
@@ -1966,13 +2343,12 @@ async function placeOrder() {
         if (!payment || !payment.id) {
             return;
         }
-        const res = await fetch(`${ORDER_URL}/${order.id}/pay`, {
-            method: "POST",
-            headers: authHeaders()
+        const res = await authFetch(`${ORDER_URL}/${order.id}/pay`, {
+            method: "POST"
         });
         const paidOrder = await parseResponse(res);
         if (!paidOrder || !paidOrder.id) {
-            showToast((paidOrder && paidOrder.message) || "Unable to mark order as paid.", "error");
+            showToast(toUserMessage(paidOrder, "Unable to mark order as paid."), "error");
             return;
         }
         currentOrder = paidOrder;
@@ -1988,13 +2364,22 @@ async function placeOrder() {
     showToast("Order placed successfully.", "success");
 }
 
-updateAccountUi();
-renderCart();
-syncCheckoutPage();
-resetViewState();
-loadItems();
-
 document.addEventListener("click", closeAccountMenu);
+
+async function initializeApp() {
+    await bootstrapAuthSession();
+    updateAccountUi();
+    loadChatHistory();
+    renderCart();
+    syncCheckoutPage();
+    resetViewState();
+    await loadItems();
+    if (isSignedIn()) {
+        await loadUserOrders();
+    }
+}
+
+initializeApp();
 </script>
 </body>
 </html>

@@ -12,7 +12,12 @@ spring:
         add-to-simple-url-handler-mapping: true
         cors-configurations:
           '[/**]':
-            allowedOriginPatterns: "*"
+            allowedOriginPatterns:
+              - "null"
+              - "http://127.0.0.1:5500"
+              - "http://localhost:5500"
+              - "http://127.0.0.1:3000"
+              - "http://localhost:3000"
             allowedMethods:
               - GET
               - POST
@@ -21,7 +26,7 @@ spring:
               - OPTIONS
             allowedHeaders: "*"
             exposedHeaders: "*"
-            allowCredentials: false
+            allowCredentials: true
       routes:
         - id: account-service
           uri: http://localhost:8081
@@ -29,25 +34,75 @@ spring:
             - Path=/api/account,/api/account/**
           filters:
             - StripPrefix=2
+            - name: CircuitBreaker
+              args:
+                name: accountServiceCircuitBreaker
+                fallbackUri: forward:/fallback/account
         - id: item-service
           uri: http://localhost:8082
           predicates:
             - Path=/api/items,/api/items/**
           filters:
             - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: itemServiceCircuitBreaker
+                fallbackUri: forward:/fallback/items
         - id: order-service
           uri: http://localhost:8083
           predicates:
             - Path=/api/orders,/api/orders/**
           filters:
             - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: orderServiceCircuitBreaker
+                fallbackUri: forward:/fallback/orders
         - id: payment-service
           uri: http://localhost:8084
           predicates:
             - Path=/api/payments,/api/payments/**
           filters:
             - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: paymentServiceCircuitBreaker
+                fallbackUri: forward:/fallback/payments
+        - id: ai-service
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/ai,/api/ai/**
+          filters:
+            - StripPrefix=2
 
 auth:
   jwt:
     secret: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      accountServiceCircuitBreaker:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 6
+        minimumNumberOfCalls: 3
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+      itemServiceCircuitBreaker:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 6
+        minimumNumberOfCalls: 3
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+      orderServiceCircuitBreaker:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 6
+        minimumNumberOfCalls: 3
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+      paymentServiceCircuitBreaker:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 6
+        minimumNumberOfCalls: 3
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s

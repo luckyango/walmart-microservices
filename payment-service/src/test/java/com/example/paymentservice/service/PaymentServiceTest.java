@@ -1,6 +1,7 @@
 package com.example.paymentservice.service;
 
 import com.example.paymentservice.dto.CreatePaymentRequest;
+import com.example.paymentservice.event.PaymentEventPublisher;
 import com.example.paymentservice.model.Payment;
 import com.example.paymentservice.repository.PaymentRepository;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,9 @@ class PaymentServiceTest {
 
     @Mock
     private PaymentRepository paymentRepository;
+
+    @Mock
+    private PaymentEventPublisher paymentEventPublisher;
 
     @InjectMocks
     private PaymentService paymentService;

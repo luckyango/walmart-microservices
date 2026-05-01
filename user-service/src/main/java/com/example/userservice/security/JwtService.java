@@ -16,17 +16,17 @@ import java.util.Date;
 public class JwtService {
 
     private final SecretKey signingKey;
-    private final long expirationMs;
+    private final long accessExpirationMs;
 
     public JwtService(@Value("${auth.jwt.secret}") String secret,
-                      @Value("${auth.jwt.expiration-ms}") long expirationMs) {
+                      @Value("${auth.jwt.access-expiration-ms}") long accessExpirationMs) {
         this.signingKey = buildKey(secret);
-        this.expirationMs = expirationMs;
+        this.accessExpirationMs = accessExpirationMs;
     }
 
     public String generateToken(AppUser user) {
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + expirationMs);
+        Date expiry = new Date(now.getTime() + accessExpirationMs);
 
         return Jwts.builder()
                 .subject(String.valueOf(user.getId()))
@@ -36,6 +36,10 @@ public class JwtService {
                 .expiration(expiry)
                 .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public long getAccessExpirationMs() {
+        return accessExpirationMs;
     }
 
     private SecretKey buildKey(String secret) {

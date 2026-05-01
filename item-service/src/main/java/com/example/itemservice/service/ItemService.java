@@ -20,6 +20,17 @@ public class ItemService {
 
     public Item createItem(Item item) {
         validateItem(item);
+        if (item.getUpc() != null && !item.getUpc().isBlank()) {
+            return itemRepository.findFirstByUpc(item.getUpc())
+                    .map(existing -> {
+                        existing.setName(item.getName());
+                        existing.setPictureUrl(item.getPictureUrl());
+                        existing.setPrice(item.getPrice());
+                        existing.setInventory(item.getInventory());
+                        return itemRepository.save(existing);
+                    })
+                    .orElseGet(() -> itemRepository.save(item));
+        }
         return itemRepository.save(item);
     }
 
@@ -80,6 +91,9 @@ public class ItemService {
     private void validateItem(Item item) {
         if (item.getName() == null || item.getName().isBlank()) {
             throw new IllegalArgumentException("Item name is required");
+        }
+        if (item.getUpc() == null || item.getUpc().isBlank()) {
+            throw new IllegalArgumentException("Item UPC is required");
         }
         if (item.getPrice() <= 0) {
             throw new IllegalArgumentException("Price must be positive");

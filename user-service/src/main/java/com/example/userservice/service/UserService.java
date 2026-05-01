@@ -1,5 +1,6 @@
 package com.example.userservice.service;
 
+import com.example.userservice.dto.AuthSession;
 import com.example.userservice.dto.LoginResponse;
 import com.example.userservice.dto.UserResponse;
 import com.example.userservice.model.AppUser;
@@ -9,12 +10,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    @org.springframework.beans.factory.annotation.Value("${auth.jwt.refresh-expiration-ms}")
+    private long refreshExpirationMs;
 
     public AppUser register(AppUser user) {
         validateUser(user);
@@ -25,7 +31,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public LoginResponse login(String email, String password) {
+    public AuthSession login(String email, String password) {
         AppUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
@@ -40,10 +46,39 @@ public class UserService {
 
         if (!isHashedPassword) {
             user.setPassword(passwordEncoder.encode(password));
-            userRepository.save(user);
         }
 
-        return new LoginResponse(jwtService.generateToken(user), UserResponse.from(user));
+        return createSession(user);
+    }
+
+    public AuthSession refresh(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new IllegalArgumentException("Refresh token is required");
+        }
+
+        AppUser user = userRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new IllegalArgumentException("Refresh token is invalid"));
+
+        if (user.getRefreshTokenExpiresAt() == null || user.getRefreshTokenExpiresAt().isBefore(LocalDateTime.now())) {
+            user.setRefreshToken(null);
+            user.setRefreshTokenExpiresAt(null);
+            userRepository.save(user);
+            throw new IllegalArgumentException("Refresh token has expired");
+        }
+
+        return createSession(user);
+    }
+
+    public void logout(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return;
+        }
+
+        userRepository.findByRefreshToken(refreshToken).ifPresent(user -> {
+            user.setRefreshToken(null);
+            user.setRefreshTokenExpiresAt(null);
+            userRepository.save(user);
+        });
     }
 
     public AppUser getUser(Long id) {
@@ -79,5 +114,21 @@ public class UserService {
         if (user.getPassword() == null || user.getPassword().isBlank()) {
             throw new IllegalArgumentException("Password is required");
         }
+    }
+
+    private AuthSession createSession(AppUser user) {
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = UUID.randomUUID() + "-" + UUID.randomUUID();
+        user.setRefreshToken(refreshToken);
+        user.setRefreshTokenExpiresAt(LocalDateTime.now().plusNanos(refreshExpirationMs * 1_000_000));
+        userRepository.save(user);
+
+        LoginResponse response = new LoginResponse(
+                accessToken,
+                "Bearer",
+                jwtService.getAccessExpirationMs() / 1000,
+                UserResponse.from(user)
+        );
+        return new AuthSession(response, refreshToken);
     }
 }

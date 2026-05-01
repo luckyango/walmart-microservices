@@ -15,7 +15,13 @@ public class CorsConfig {
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedOriginPatterns(List.of(
+                "null",
+                "http://127.0.0.1:5500",
+                "http://localhost:5500",
+                "http://127.0.0.1:3000",
+                "http://localhost:3000"
+        ));
         config.setAllowedMethods(List.of(
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),
@@ -25,7 +31,7 @@ public class CorsConfig {
         ));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("*"));
-        config.setAllowCredentials(false);
+        config.setAllowCredentials(true);
         config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

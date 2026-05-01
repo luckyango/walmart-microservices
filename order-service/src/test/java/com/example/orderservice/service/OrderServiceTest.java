@@ -3,6 +3,7 @@ package com.example.orderservice.service;
 import com.example.orderservice.client.ItemServiceClient;
 import com.example.orderservice.client.PaymentServiceClient;
 import com.example.orderservice.dto.ItemDto;
+import com.example.orderservice.event.OrderEventPublisher;
 import com.example.orderservice.model.CustomerOrder;
 import com.example.orderservice.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,9 @@ class OrderServiceTest {
 
     @Mock
     private PaymentServiceClient paymentServiceClient;
+
+    @Mock
+    private OrderEventPublisher orderEventPublisher;
 
     @InjectMocks
     private OrderService orderService;
