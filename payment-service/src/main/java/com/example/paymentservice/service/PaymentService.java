@@ -51,6 +51,16 @@ public class PaymentService {
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
     }
 
+    public Payment getPaymentByOrderId(Long orderId) {
+        return paymentRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+    }
+
+    public Payment refundPaymentByOrderId(Long orderId) {
+        Payment payment = getPaymentByOrderId(orderId);
+        return refundPayment(payment.getId());
+    }
+
     private void validateCreateRequest(CreatePaymentRequest request) {
         if (request.getOrderId() == null || request.getUserId() == null) {
             throw new IllegalArgumentException("orderId and userId are required");

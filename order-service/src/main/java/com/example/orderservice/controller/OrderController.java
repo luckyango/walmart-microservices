@@ -4,6 +4,7 @@ import com.example.orderservice.model.CustomerOrder;
 import com.example.orderservice.service.OrderService;
 import com.example.orderservice.dto.UpdateOrderRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,9 +40,10 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/cancel")
-    public CustomerOrder cancelOrder(@PathVariable("id") Long id) {
+    public CustomerOrder cancelOrder(@PathVariable("id") Long id,
+                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         ensureOrderOwner(id);
-        return orderService.cancelOrder(id);
+        return orderService.cancelOrder(id, authorizationHeader);
     }
 
     @GetMapping("/{id}")

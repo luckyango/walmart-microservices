@@ -12,6 +12,7 @@ Completed in this version:
 | `item-service` | 8082 | Item metadata and inventory |
 | `order-service` | 8083 | Create, update, pay, cancel, and lookup orders |
 | `payment-service` | 8084 | Submit payment, refund payment, lookup payment, idempotency key support |
+| `api-gateway` | 8080 | Unified entrypoint for frontend traffic and JWT checks on protected APIs |
 | `frontend` | local html | Walmart-style demo storefront with cart and checkout flow |
 
 Demo flow currently supported:
@@ -30,7 +31,12 @@ Demo flow currently supported:
 
 ## Run Locally
 
-Open 4 terminals from the repo root and start each service:
+Open 5 terminals from the repo root and start each service:
+
+```bash
+cd api-gateway
+mvn spring-boot:run
+```
 
 ```bash
 cd user-service
@@ -60,7 +66,7 @@ frontend/index.html
 
 ## Swagger
 
-Each service exposes Swagger UI:
+Each backend service exposes Swagger UI:
 
 - Account Service: `http://localhost:8081/swagger-ui.html`
 - Item Service: `http://localhost:8082/swagger-ui.html`
@@ -105,6 +111,10 @@ Payment Service:
 - Global exception handling added to avoid raw stacktrace demo failures
 - Service-layer unit tests added for all four services
 - Minimal payment idempotency implemented through `idempotencyKey`
+- JWT authentication and authorization added for order/payment APIs
+- Local API Gateway added as the unified frontend entrypoint
+- OpenFeign added for synchronous service-to-service calls in `order-service`
+- Atomic MongoDB inventory updates added to reduce oversell race conditions
 - Minimal cart flow implemented in frontend without adding a separate cart service yet
 
 ## Important Simplifications
@@ -128,6 +138,6 @@ Planned next-phase work to align with the full final project requirements:
    `Account -> MySQL/PostgreSQL`
    `Item -> MongoDB`
    `Order -> Cassandra`
-5. OpenFeign for service-to-service calls
+5. Complete API contract and event contract docs
 6. Jacoco coverage reports and stronger test coverage
 7. Rename `user-service` to `account-service` at the code/module level if desired

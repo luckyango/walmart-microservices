@@ -29,9 +29,23 @@ public class PaymentController {
         return paymentService.refundPayment(id);
     }
 
+    @PostMapping("/order/{orderId}/refund")
+    public Payment refundPaymentByOrderId(@PathVariable("orderId") Long orderId) {
+        Payment payment = paymentService.getPaymentByOrderId(orderId);
+        ensureUserAccess(payment.getUserId());
+        return paymentService.refundPayment(payment.getId());
+    }
+
     @GetMapping("/{id}")
     public Payment getPayment(@PathVariable("id") Long id) {
         Payment payment = paymentService.getPayment(id);
+        ensureUserAccess(payment.getUserId());
+        return payment;
+    }
+
+    @GetMapping("/order/{orderId}")
+    public Payment getPaymentByOrderId(@PathVariable("orderId") Long orderId) {
+        Payment payment = paymentService.getPaymentByOrderId(orderId);
         ensureUserAccess(payment.getUserId());
         return payment;
     }

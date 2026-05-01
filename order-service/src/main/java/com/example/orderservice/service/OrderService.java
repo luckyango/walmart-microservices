@@ -1,12 +1,12 @@
 package com.example.orderservice.service;
 
+import com.example.orderservice.client.ItemServiceClient;
+import com.example.orderservice.client.PaymentServiceClient;
 import com.example.orderservice.dto.ItemDto;
 import com.example.orderservice.model.CustomerOrder;
 import com.example.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,22 +15,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final RestTemplate restTemplate;
-
-    @Value("${services.item-service-url}")
-    private String itemServiceUrl;
+    private final ItemServiceClient itemServiceClient;
+    private final PaymentServiceClient paymentServiceClient;
 
     public CustomerOrder createOrder(Long userId, String itemId, int qty) {
         if (qty <= 0) {
             throw new IllegalArgumentException("Quantity must be positive");
         }
 
-        ItemDto item = restTemplate.getForObject(itemServiceUrl + "/items/" + itemId, ItemDto.class);
+        ItemDto item = itemServiceClient.getItem(itemId);
         if (item == null) {
             throw new IllegalArgumentException("Item not found");
         }
 
-        restTemplate.postForObject(itemServiceUrl + "/items/" + itemId + "/decrease?qty=" + qty, null, ItemDto.class);
+        itemServiceClient.decreaseInventory(itemId, qty);
 
         CustomerOrder order = new CustomerOrder();
         order.setUserId(userId);
@@ -56,12 +54,12 @@ public class OrderService {
 
         int delta = newQty - order.getQuantity();
         if (delta > 0) {
-            restTemplate.postForObject(itemServiceUrl + "/items/" + order.getItemId() + "/decrease?qty=" + delta, null, ItemDto.class);
+            itemServiceClient.decreaseInventory(order.getItemId(), delta);
         } else if (delta < 0) {
-            restTemplate.postForObject(itemServiceUrl + "/items/" + order.getItemId() + "/increase?qty=" + Math.abs(delta), null, ItemDto.class);
+            itemServiceClient.increaseInventory(order.getItemId(), Math.abs(delta));
         }
 
-        ItemDto item = restTemplate.getForObject(itemServiceUrl + "/items/" + order.getItemId(), ItemDto.class);
+        ItemDto item = itemServiceClient.getItem(order.getItemId());
         if (item == null) {
             throw new IllegalArgumentException("Item not found");
         }
@@ -82,15 +80,21 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public CustomerOrder cancelOrder(Long orderId) {
+    public CustomerOrder cancelOrder(Long orderId, String authorizationHeader) {
         CustomerOrder order = getOrder(orderId);
         if ("CANCELLED".equals(order.getStatus())) {
             return order;
         }
+        if (!"CREATED".equals(order.getStatus()) && !"PAID".equals(order.getStatus())) {
+            throw new IllegalStateException("Only CREATED or PAID order can be cancelled");
+        }
+
         if ("PAID".equals(order.getStatus())) {
+            paymentServiceClient.refundPaymentByOrderId(orderId, authorizationHeader);
             System.out.println("[EVENT] RefundRequested: orderId=" + orderId);
         }
-        restTemplate.postForObject(itemServiceUrl + "/items/" + order.getItemId() + "/increase?qty=" + order.getQuantity(), null, ItemDto.class);
+
+        itemServiceClient.increaseInventory(order.getItemId(), order.getQuantity());
         order.setStatus("CANCELLED");
         System.out.println("[EVENT] OrderCancelled: orderId=" + orderId);
         return orderRepository.save(order);

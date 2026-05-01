@@ -3,6 +3,11 @@ package com.example.itemservice.service;
 import com.example.itemservice.model.Item;
 import com.example.itemservice.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemService {
     private final ItemRepository itemRepository;
+    private final MongoTemplate mongoTemplate;
 
     public Item createItem(Item item) {
         validateItem(item);
@@ -26,24 +32,49 @@ public class ItemService {
     }
 
     public Item decreaseInventory(String id, int qty) {
-        Item item = getItem(id);
         if (qty <= 0) {
             throw new IllegalArgumentException("Quantity must be positive");
         }
-        if (item.getInventory() < qty) {
-            throw new IllegalStateException("Not enough inventory");
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(id).and("inventory").gte(qty));
+        Update update = new Update().inc("inventory", -qty);
+
+        Item updated = mongoTemplate.findAndModify(
+                query,
+                update,
+                FindAndModifyOptions.options().returnNew(true),
+                Item.class
+        );
+
+        if (updated != null) {
+            return updated;
         }
-        item.setInventory(item.getInventory() - qty);
-        return itemRepository.save(item);
+        if (!itemRepository.existsById(id)) {
+            throw new IllegalArgumentException("Item not found");
+        }
+        throw new IllegalStateException("Not enough inventory");
     }
 
     public Item increaseInventory(String id, int qty) {
-        Item item = getItem(id);
         if (qty <= 0) {
             throw new IllegalArgumentException("Quantity must be positive");
         }
-        item.setInventory(item.getInventory() + qty);
-        return itemRepository.save(item);
+
+        Query query = new Query(Criteria.where("_id").is(id));
+        Update update = new Update().inc("inventory", qty);
+
+        Item updated = mongoTemplate.findAndModify(
+                query,
+                update,
+                FindAndModifyOptions.options().returnNew(true),
+                Item.class
+        );
+
+        if (updated == null) {
+            throw new IllegalArgumentException("Item not found");
+        }
+        return updated;
     }
 
     private void validateItem(Item item) {

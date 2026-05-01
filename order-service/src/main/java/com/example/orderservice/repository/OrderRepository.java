@@ -1,10 +1,12 @@
 package com.example.orderservice.repository;
 
 import com.example.orderservice.model.CustomerOrder;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface OrderRepository extends JpaRepository<CustomerOrder, Long> {
+public interface OrderRepository {
+    CustomerOrder save(CustomerOrder order);
+    Optional<CustomerOrder> findById(Long id);
     List<CustomerOrder> findByUserId(Long userId);
 }

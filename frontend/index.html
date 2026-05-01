@@ -9,15 +9,15 @@
             --blue: #0071dc;
             --blue-dark: #004f9a;
             --yellow: #ffc220;
-            --bg: #121417;
-            --surface: #1b1d21;
-            --surface-2: #23262b;
-            --line: #32363c;
-            --text: #f5f7fa;
-            --muted: #b8bec7;
-            --green: #7bdc4d;
+            --bg: #ffffff;
+            --surface: #ffffff;
+            --surface-2: #ffffff;
+            --line: #e8edf3;
+            --text: #111827;
+            --muted: #64748b;
+            --green: #2f8f2f;
             --danger: #d14343;
-            --shadow: 0 16px 38px rgba(0, 0, 0, 0.2);
+            --shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
         }
 
         * { box-sizing: border-box; }
@@ -25,7 +25,7 @@
         body {
             margin: 0;
             font-family: "Segoe UI", Arial, sans-serif;
-            background: #0f1114;
+            background: var(--bg);
             color: var(--text);
         }
 
@@ -37,8 +37,8 @@
             position: sticky;
             top: 0;
             z-index: 40;
-            background: linear-gradient(180deg, #0275e3 0%, #005fc0 100%);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+            background: #005fc0;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
         }
 
         .header-inner,
@@ -46,7 +46,7 @@
         .page,
         .promo,
         .section {
-            width: min(1480px, calc(100% - 32px));
+            width: min(75vw, calc(100% - 32px));
             margin: 0 auto;
         }
 
@@ -61,20 +61,23 @@
         .logo {
             width: 60px;
             height: 60px;
-            border-radius: 999px;
             display: grid;
             place-items: center;
-            background: #0053a5;
+            background: transparent;
             color: var(--yellow);
-            font-size: 28px;
-            font-weight: 800;
+        }
+
+        .logo svg {
+            width: 56px;
+            height: 56px;
+            display: block;
         }
 
         .delivery-pill,
         .header-link {
-            background: rgba(0, 34, 76, 0.24);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 999px;
+            background: transparent;
+            border: 0;
+            border-radius: 0;
             padding: 10px 18px;
         }
 
@@ -82,12 +85,13 @@
         .header-link strong {
             display: block;
             font-size: 15px;
+            color: #ffffff;
         }
 
         .delivery-pill span,
         .header-link span {
             font-size: 13px;
-            color: rgba(255, 255, 255, 0.84);
+            color: #ffffff;
         }
 
         .header-link {
@@ -173,7 +177,8 @@
         }
 
         .category-shell {
-            background: #1b1d1f;
+            background: #ffffff;
+            border-bottom: 1px solid #edf2f7;
         }
 
         .category-bar {
@@ -185,8 +190,10 @@
 
         .chip {
             white-space: nowrap;
-            background: #26292d;
-            border-radius: 999px;
+            background: #ffffff;
+            color: #163c70;
+            border: 1px solid #dae5f0;
+            border-radius: 16px;
             padding: 10px 16px;
             font-size: 15px;
         }
@@ -236,39 +243,30 @@
         }
 
         .promo {
-            background: linear-gradient(135deg, #f6f1e8 0%, #eedbcc 100%);
+            background: #ffffff;
             color: #16181b;
-            border-radius: 24px;
-            padding: 28px;
-            display: grid;
-            grid-template-columns: 1.1fr 1fr;
-            gap: 24px;
-            box-shadow: var(--shadow);
+            border-radius: 0;
+            padding: 0;
+            display: block;
+            box-shadow: none;
+            overflow: hidden;
         }
 
         .promo-copy h1 {
-            margin: 0 0 12px;
-            font-size: clamp(34px, 4vw, 58px);
-            line-height: 0.96;
-            letter-spacing: -0.04em;
+            margin: 0;
+            font-size: 0;
         }
 
         .promo-copy p {
-            margin: 0 0 18px;
-            max-width: 560px;
-            font-size: 18px;
-            line-height: 1.5;
-            color: #46515f;
+            display: none;
         }
 
         .promo-actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
+            display: none;
         }
 
         .cta {
-            background: #111827;
+            background: var(--blue);
             color: white;
             padding: 13px 18px;
         }
@@ -281,22 +279,21 @@
         }
 
         .promo-media {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            display: block;
         }
 
         .promo-tile {
-            min-height: 210px;
-            border-radius: 22px;
+            min-height: 0;
+            border-radius: 0;
             overflow: hidden;
             background: white;
-            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
+            box-shadow: none;
         }
 
         .promo-tile img {
             width: 100%;
-            height: 100%;
+            display: block;
+            height: 280px;
             object-fit: cover;
         }
 
@@ -331,10 +328,10 @@
         .checkout-hero,
         .checkout-panel,
         .checkout-side-card {
-            background: #181b1f;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 22px;
-            box-shadow: var(--shadow);
+            background: white;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            box-shadow: none;
         }
 
         .checkout-hero {
@@ -387,7 +384,7 @@
             align-items: center;
             padding: 16px;
             border-radius: 18px;
-            background: #23262b;
+            background: #f6f8fb;
         }
 
         .checkout-item-image {
@@ -469,7 +466,7 @@
 
         .checkout-actions button {
             border: 0;
-            border-radius: 999px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: 700;
             padding: 14px 16px;
@@ -489,8 +486,8 @@
             margin-top: 14px;
             padding: 14px 16px;
             border-radius: 16px;
-            background: #0c3f8f;
-            color: #e5f0ff;
+            background: #eaf3ff;
+            color: #2457a6;
             line-height: 1.45;
         }
 
@@ -508,10 +505,10 @@
         .orders-hero,
         .orders-list,
         .order-record {
-            background: #181b1f;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 22px;
-            box-shadow: var(--shadow);
+            background: white;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            box-shadow: none;
         }
 
         .orders-hero {
@@ -559,12 +556,42 @@
             margin-bottom: 12px;
         }
 
+        .order-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .order-actions button {
+            border: 0;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            padding: 10px 14px;
+        }
+
+        .order-actions .primary {
+            background: var(--blue);
+            color: white;
+        }
+
+        .order-actions .secondary {
+            background: #2a2e34;
+            color: white;
+        }
+
+        .order-actions button[disabled] {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
         .order-status {
             display: inline-block;
             padding: 6px 10px;
             border-radius: 999px;
-            background: #0c4a6e;
-            color: #8dd6ff;
+            background: #eaf3ff;
+            color: #0f5bd8;
             font-size: 12px;
             font-weight: 700;
             margin-bottom: 12px;
@@ -590,31 +617,34 @@
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(5, minmax(0, 1fr));
+            grid-template-columns: repeat(6, minmax(0, 1fr));
             gap: 18px;
         }
 
         .product-card {
-            background: #181b1f;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 18px;
+            background: white;
+            border: 0;
+            border-radius: 0;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            min-height: 380px;
-            box-shadow: var(--shadow);
+            min-height: 0;
+            box-shadow: none;
         }
 
         .product-media {
             position: relative;
-            aspect-ratio: 1 / 1;
+            height: 320px;
             background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .product-media img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
         }
 
         .wish {
@@ -624,27 +654,39 @@
             width: 44px;
             height: 44px;
             border-radius: 999px;
-            background: rgba(16, 18, 21, 0.92);
-            color: white;
+            background: rgba(255, 255, 255, 0.96);
+            color: #111827;
             display: grid;
             place-items: center;
             font-size: 22px;
+            border: 1px solid #dde6f0;
         }
 
         .product-body {
-            padding: 14px 16px 18px;
+            padding: 14px 6px 18px;
             display: flex;
             flex-direction: column;
             gap: 10px;
             flex: 1;
         }
 
+        .product-title {
+            min-height: 72px;
+            display: flex;
+            align-items: flex-start;
+            line-height: 1.4;
+        }
+
+        .product-title strong {
+            display: block;
+        }
+
         .badge {
             align-self: flex-start;
             padding: 6px 10px;
             border-radius: 8px;
-            background: #0c4a6e;
-            color: #8cd7ff;
+            background: #eef5ff;
+            color: #0f5bd8;
             font-size: 12px;
             font-weight: 700;
         }
@@ -671,6 +713,7 @@
             background: white;
             color: #111827;
             padding: 12px 14px;
+            border: 1px solid #111827;
         }
 
         .drawer {
@@ -679,7 +722,7 @@
             right: -420px;
             width: min(420px, 100vw);
             height: 100vh;
-            background: #15181c;
+            background: white;
             box-shadow: -16px 0 40px rgba(0, 0, 0, 0.35);
             z-index: 60;
             transition: right 0.24s ease;
@@ -693,7 +736,7 @@
 
         .drawer-head {
             padding: 22px 22px 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid #e5edf5;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -727,8 +770,8 @@
         }
 
         .cart-item {
-            background: #22262b;
-            border-radius: 16px;
+            background: #f6f8fb;
+            border-radius: 12px;
             padding: 14px;
             display: grid;
             gap: 8px;
@@ -737,7 +780,7 @@
 
         .drawer-actions {
             padding: 18px 22px 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid #e5edf5;
             display: grid;
             gap: 10px;
         }
@@ -752,15 +795,15 @@
         .drawer-actions button:last-child,
         .modal-actions .secondary,
         .mini-btn {
-            background: #2a2e34;
-            color: white;
+            background: #eef2f7;
+            color: #111827;
             padding: 13px 16px;
         }
 
         .backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(8, 10, 14, 0.72);
+            background: rgba(15, 23, 42, 0.28);
             z-index: 50;
             display: none;
         }
@@ -787,7 +830,7 @@
             width: min(560px, 100%);
             background: white;
             color: #111827;
-            border-radius: 24px;
+            border-radius: 16px;
             padding: 28px;
             box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
         }
@@ -905,12 +948,19 @@
             }
 
             .delivery-pill { display: none; }
-            .promo { grid-template-columns: 1fr; }
-            .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
             .checkout-layout { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 860px) {
+            .header-inner,
+            .category-bar,
+            .page,
+            .promo,
+            .section {
+                width: calc(100% - 24px);
+            }
+
             .header-inner {
                 grid-template-columns: 58px 1fr;
             }
@@ -934,7 +984,18 @@
 
 <header class="header">
     <div class="header-inner">
-        <div class="logo">*</div>
+        <div class="logo" aria-label="Walmart spark">
+            <svg viewBox="0 0 64 64" aria-hidden="true">
+                <g fill="#ffc220">
+                    <rect x="28" y="4" width="8" height="18" rx="4"></rect>
+                    <rect x="28" y="4" width="8" height="18" rx="4" transform="rotate(60 32 32)"></rect>
+                    <rect x="28" y="4" width="8" height="18" rx="4" transform="rotate(120 32 32)"></rect>
+                    <rect x="28" y="4" width="8" height="18" rx="4" transform="rotate(180 32 32)"></rect>
+                    <rect x="28" y="4" width="8" height="18" rx="4" transform="rotate(240 32 32)"></rect>
+                    <rect x="28" y="4" width="8" height="18" rx="4" transform="rotate(300 32 32)"></rect>
+                </g>
+            </svg>
+        </div>
 
         <div class="delivery-pill">
             <strong>Pickup or delivery?</strong>
@@ -988,20 +1049,8 @@
 
 <main class="page">
     <section class="promo" id="storefrontHero">
-        <div class="promo-copy">
-            <h1>Save more on the products customers love right now.</h1>
-            <p>Browse fresh arrivals, add your favorites to cart, and complete checkout with a real account, order, and payment flow behind the storefront.</p>
-            <div class="promo-actions">
-                <button class="cta" onclick="loadItems()">Shop deals</button>
-                <button class="ghost-btn" id="heroRegisterBtn" onclick="openRegisterModal()">Create account</button>
-                <button class="ghost-btn" id="heroLoginBtn" onclick="openLoginModal()">Sign in</button>
-                <button class="ghost-btn hidden" id="heroOrdersBtn" onclick="openOrdersPage()">My order</button>
-            </div>
-        </div>
-
         <div class="promo-media">
-            <div class="promo-tile"><img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=900&q=80" alt="electronics" /></div>
-            <div class="promo-tile"><img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80" alt="shoes" /></div>
+            <div class="promo-tile"><img src="images/banner1.png" alt="Walmart style banner" /></div>
         </div>
     </section>
 
@@ -1011,7 +1060,6 @@
                 <h2>Featured products</h2>
                 <p>Shop the catalog, add items to cart, and check out when you are ready.</p>
             </div>
-            <button class="ghost-btn" onclick="seedItems()">Reload sample products</button>
         </div>
 
         <div class="grid" id="productGrid"></div>
@@ -1175,17 +1223,53 @@
 </div>
 
 <script>
-const USER_URL = "http://localhost:8081";
-const ITEM_URL = "http://localhost:8082";
-const ORDER_URL = "http://localhost:8083";
-const PAYMENT_URL = "http://localhost:8084";
-const fallbackImages = [
-    "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1585386959984-a41552231658?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80"
+const USER_URL = "http://localhost:8080/api/account/users";
+const ITEM_URL = "http://localhost:8080/api/items";
+const ORDER_URL = "http://localhost:8080/api/orders";
+const PAYMENT_URL = "http://localhost:8080/api/payments";
+
+function buildToyImage(label, background, accent, ribbon) {
+    const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 860">
+        <defs>
+            <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="${background}" />
+                <stop offset="100%" stop-color="#ffffff" />
+            </linearGradient>
+        </defs>
+        <rect width="720" height="860" rx="0" fill="url(#bg)" />
+        <ellipse cx="360" cy="740" rx="190" ry="42" fill="rgba(15,23,42,0.08)" />
+        <circle cx="250" cy="300" r="74" fill="${accent}" opacity="0.92" />
+        <circle cx="470" cy="300" r="74" fill="${accent}" opacity="0.92" />
+        <circle cx="360" cy="370" r="170" fill="${accent}" />
+        <circle cx="360" cy="415" r="98" fill="#fff7f1" />
+        <ellipse cx="300" cy="352" rx="18" ry="24" fill="#1f2937" />
+        <ellipse cx="420" cy="352" rx="18" ry="24" fill="#1f2937" />
+        <ellipse cx="360" cy="405" rx="30" ry="22" fill="#1f2937" />
+        <path d="M314 455c28 28 64 42 104 42s76-14 104-42" fill="none" stroke="#1f2937" stroke-width="16" stroke-linecap="round" />
+        <path d="M232 555c0-70 58-128 128-128h0c70 0 128 58 128 128v56H232z" fill="${ribbon}" />
+        <circle cx="270" cy="560" r="28" fill="#ffffff" opacity="0.9" />
+        <circle cx="450" cy="560" r="28" fill="#ffffff" opacity="0.9" />
+        <rect x="84" y="80" width="250" height="72" rx="18" fill="rgba(255,255,255,0.78)" />
+        <text x="110" y="126" fill="#0f172a" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">${label}</text>
+    </svg>`;
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+const DEMO_ITEMS = [
+    { name: "Buttercup Duck Plush", upc: "UPC-2001", price: 17.99, inventory: 14, pictureUrl: "images/item1.png" },
+    { name: "Honey Bear Plush", upc: "UPC-2002", price: 24.99, inventory: 16, pictureUrl: "images/item2.png" },
+    { name: "Cloud Bunny Plush", upc: "UPC-2003", price: 22.49, inventory: 19, pictureUrl: "images/item3.png" },
+    { name: "Peach Panda Plush", upc: "UPC-2004", price: 26.99, inventory: 11, pictureUrl: "images/item4.png" },
+    { name: "Mint Dino Plush", upc: "UPC-2005", price: 20.99, inventory: 18, pictureUrl: "images/item5.png" },
+    { name: "Star Kitty Plush", upc: "UPC-2006", price: 19.99, inventory: 15, pictureUrl: "images/item6.png" }
 ];
+
+const DEMO_ITEM_MAP = Object.fromEntries(DEMO_ITEMS.map(item => [item.upc, item]));
+const LOCAL_DEMO_ITEMS = DEMO_ITEMS.map((item, index) => ({
+    ...item,
+    id: `demo-${index + 1}`
+}));
 
 let token = "";
 let storeItems = [];
@@ -1242,6 +1326,48 @@ function formatPrice(value) {
     return Number(value || 0).toLocaleString("en-US", { style: "currency", currency: "USD" });
 }
 
+function canonicalizeItem(item, index = 0) {
+    const fallback = DEMO_ITEMS[index % DEMO_ITEMS.length];
+    const demo = item && item.upc ? DEMO_ITEM_MAP[item.upc] : null;
+    return {
+        ...item,
+        name: demo ? demo.name : item.name,
+        upc: demo ? demo.upc : item.upc,
+        price: demo ? demo.price : item.price,
+        pictureUrl: demo ? demo.pictureUrl : (item.pictureUrl || fallback.pictureUrl)
+    };
+}
+
+function normalizeCatalog(items) {
+    const deduped = new Map();
+    items.forEach((item, index) => {
+        const canonical = canonicalizeItem(item, index);
+        const key = canonical.upc || canonical.id || `${canonical.name}-${index}`;
+        if (!deduped.has(key)) {
+            deduped.set(key, canonical);
+            return;
+        }
+
+        const existing = deduped.get(key);
+        const existingInventory = Number(existing.inventory || 0);
+        const nextInventory = Number(canonical.inventory || 0);
+        if (nextInventory > existingInventory) {
+            deduped.set(key, canonical);
+        }
+    });
+
+    return Array.from(deduped.values()).sort((left, right) => (left.upc || "").localeCompare(right.upc || ""));
+}
+
+function buildDisplayCatalog(serverItems) {
+    const normalized = normalizeCatalog(Array.isArray(serverItems) ? serverItems : []);
+    const serverMap = new Map(normalized.map(item => [item.upc, item]));
+    return LOCAL_DEMO_ITEMS.map(localItem => {
+        const serverItem = serverMap.get(localItem.upc);
+        return serverItem ? canonicalizeItem(serverItem) : localItem;
+    });
+}
+
 function openBackdrop() {
     document.getElementById("backdrop").classList.add("open");
 }
@@ -1256,6 +1382,16 @@ function closeAllOverlays() {
     closeAccountMenu();
     closeModal("registerModal", false);
     closeModal("loginModal", false);
+}
+
+function resetViewState() {
+    document.querySelector(".page").classList.remove("hidden");
+    document.getElementById("checkoutPage").classList.remove("open");
+    document.getElementById("ordersPage").classList.remove("open");
+    document.getElementById("cartDrawer").classList.remove("open");
+    document.getElementById("registerModal").classList.remove("open");
+    document.getElementById("loginModal").classList.remove("open");
+    document.getElementById("backdrop").classList.remove("open");
 }
 
 function openModal(id) {
@@ -1363,20 +1499,27 @@ function signOut() {
 }
 
 function updateAccountUi() {
+    const accountHeaderSmall = document.getElementById("accountHeaderSmall");
+    const accountHeaderMain = document.getElementById("accountHeaderMain");
+    const registerHeaderLink = document.getElementById("registerHeaderLink");
+    const heroRegisterBtn = document.getElementById("heroRegisterBtn");
+    const heroLoginBtn = document.getElementById("heroLoginBtn");
+    const heroOrdersBtn = document.getElementById("heroOrdersBtn");
+
     if (isSignedIn() && currentUser.username) {
-        document.getElementById("accountHeaderSmall").textContent = "Hi";
-        document.getElementById("accountHeaderMain").textContent = currentUser.username;
-        document.getElementById("registerHeaderLink").classList.add("hidden-link");
-        document.getElementById("heroRegisterBtn").classList.add("hidden");
-        document.getElementById("heroLoginBtn").classList.add("hidden");
-        document.getElementById("heroOrdersBtn").classList.remove("hidden");
+        if (accountHeaderSmall) accountHeaderSmall.textContent = "Hi";
+        if (accountHeaderMain) accountHeaderMain.textContent = currentUser.username;
+        if (registerHeaderLink) registerHeaderLink.classList.add("hidden-link");
+        if (heroRegisterBtn) heroRegisterBtn.classList.add("hidden");
+        if (heroLoginBtn) heroLoginBtn.classList.add("hidden");
+        if (heroOrdersBtn) heroOrdersBtn.classList.remove("hidden");
     } else {
-        document.getElementById("accountHeaderSmall").textContent = "Sign In";
-        document.getElementById("accountHeaderMain").textContent = "Account";
-        document.getElementById("registerHeaderLink").classList.remove("hidden-link");
-        document.getElementById("heroRegisterBtn").classList.remove("hidden");
-        document.getElementById("heroLoginBtn").classList.remove("hidden");
-        document.getElementById("heroOrdersBtn").classList.add("hidden");
+        if (accountHeaderSmall) accountHeaderSmall.textContent = "Sign In";
+        if (accountHeaderMain) accountHeaderMain.textContent = "Account";
+        if (registerHeaderLink) registerHeaderLink.classList.remove("hidden-link");
+        if (heroRegisterBtn) heroRegisterBtn.classList.remove("hidden");
+        if (heroLoginBtn) heroLoginBtn.classList.remove("hidden");
+        if (heroOrdersBtn) heroOrdersBtn.classList.add("hidden");
     }
 }
 
@@ -1386,11 +1529,13 @@ function updateCartHeader() {
 }
 
 function productImage(item, index) {
-    return item.pictureUrl || fallbackImages[index % fallbackImages.length];
+    return item.pictureUrl || DEMO_ITEMS[index % DEMO_ITEMS.length].pictureUrl;
 }
 
 function renderItems(items) {
     const grid = document.getElementById("productGrid");
+    document.querySelector(".page").classList.remove("hidden");
+    grid.style.display = "grid";
     if (!items.length) {
         grid.innerHTML = '<div class="checkout-card" style="grid-column:1 / -1; color:#111827;">No products available right now.</div>';
         return;
@@ -1405,7 +1550,7 @@ function renderItems(items) {
             <div class="product-body">
                 <div class="badge">${index % 2 === 0 ? "Popular pick" : "Reduced price"}</div>
                 <div class="price">${formatPrice(item.price)}</div>
-                <div><strong>${item.name}</strong></div>
+                <div class="product-title"><strong>${item.name}</strong></div>
                 <div class="meta">UPC ${item.upc || "N/A"}</div>
                 <div class="inventory">Inventory: ${item.inventory}</div>
                 <button onclick='addToCart(${JSON.stringify(item.id)})'>Add to cart</button>
@@ -1473,7 +1618,7 @@ function syncCheckoutPage() {
 }
 
 async function loadUserOrders() {
-    const res = await fetch(`${ORDER_URL}/orders/user/${currentUser.id}`, {
+    const res = await fetch(`${ORDER_URL}/user/${currentUser.id}`, {
         headers: authHeaders()
     });
     const data = await parseResponse(res);
@@ -1500,8 +1645,50 @@ async function loadUserOrders() {
                 <span>Total: ${formatPrice(order.totalPrice)}</span>
             </div>
             <div class="muted">Created at: ${order.createdAt || "N/A"}</div>
+            <div class="order-actions">
+                <button class="secondary" onclick="viewOrderPayment(${order.id})">View payment</button>
+                ${order.status === "CANCELLED" ? "" : `<button class="primary" onclick="cancelOrderFromList(${order.id})">${order.status === "PAID" ? "Cancel & refund" : "Cancel order"}</button>`}
+            </div>
         </div>
     `).join("");
+}
+
+async function viewOrderPayment(orderId) {
+    const res = await fetch(`${PAYMENT_URL}/order/${orderId}`, {
+        headers: authHeaders()
+    });
+    const data = await parseResponse(res);
+
+    if (!res.ok) {
+        showToast((data && data.message) || "Unable to load payment.", "error");
+        return;
+    }
+
+    currentPayment = data;
+    showToast(`Payment #${data.id} is ${data.status}.`, "info");
+}
+
+async function cancelOrderFromList(orderId) {
+    const confirmed = window.confirm("Cancel this order? Paid orders will trigger a refund.");
+    if (!confirmed) {
+        return;
+    }
+
+    const res = await fetch(`${ORDER_URL}/${orderId}/cancel`, {
+        method: "POST",
+        headers: authHeaders()
+    });
+    const data = await parseResponse(res);
+
+    if (!res.ok) {
+        showToast((data && data.message) || "Unable to cancel order.", "error");
+        return;
+    }
+
+    currentOrder = data;
+    await loadItems();
+    await loadUserOrders();
+    showToast(data.status === "CANCELLED" ? "Order cancelled successfully." : "Order updated.", "success");
 }
 
 function filterProducts() {
@@ -1539,7 +1726,7 @@ async function register() {
         paymentMethod: document.getElementById("regPayment").value
     };
 
-    const res = await fetch(`${USER_URL}/users/register`, {
+    const res = await fetch(`${USER_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
@@ -1575,7 +1762,7 @@ async function login() {
 }
 
 async function authenticateSilently(email, password) {
-    const res = await fetch(`${USER_URL}/users/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
+    const res = await fetch(`${USER_URL}/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
         method: "POST"
     });
 
@@ -1592,16 +1779,13 @@ async function authenticateSilently(email, password) {
 }
 
 async function seedItems() {
-    const demoItems = [
-        { name: "Sport Research Magnesium", upc: "UPC-2001", price: 29.99, inventory: 18, pictureUrl: fallbackImages[0] },
-        { name: "Comfy Duck Plush", upc: "UPC-2002", price: 17.99, inventory: 12, pictureUrl: fallbackImages[1] },
-        { name: "Vitamin D3 + K2", upc: "UPC-2003", price: 26.99, inventory: 22, pictureUrl: fallbackImages[2] },
-        { name: "Lavender Hand Cream", upc: "UPC-2004", price: 8.96, inventory: 40, pictureUrl: fallbackImages[3] },
-        { name: "Peppermint Detergent", upc: "UPC-2005", price: 15.98, inventory: 14, pictureUrl: fallbackImages[4] }
-    ];
+    const existingRes = await fetch(`${ITEM_URL}`);
+    const existingItems = await parseResponse(existingRes);
+    const existingUpcs = new Set(Array.isArray(existingItems) ? existingItems.map(item => item.upc).filter(Boolean) : []);
+    const missingItems = DEMO_ITEMS.filter(item => !existingUpcs.has(item.upc));
 
-    for (const item of demoItems) {
-        await fetch(`${ITEM_URL}/items`, {
+    for (const item of missingItems) {
+        await fetch(`${ITEM_URL}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(item)
@@ -1610,19 +1794,36 @@ async function seedItems() {
 
     hasAutoSeeded = true;
     await loadItems();
-    showToast("Sample products loaded.", "success");
+    showToast(missingItems.length ? "Sample plush products loaded." : "Catalog is already up to date.", "success");
 }
 
 async function loadItems() {
-    const res = await fetch(`${ITEM_URL}/items`);
-    storeItems = await parseResponse(res);
+    resetViewState();
+    renderItems(storeItems.length ? storeItems : LOCAL_DEMO_ITEMS);
 
-    if (!Array.isArray(storeItems)) {
-        show(storeItems);
+    let parsedItems = [];
+    try {
+        const res = await fetch(`${ITEM_URL}`);
+        parsedItems = await parseResponse(res);
+    } catch {
+        storeItems = LOCAL_DEMO_ITEMS;
+        renderItems(storeItems);
+        showToast("Showing local catalog preview while product service is unavailable.", "info");
         return;
     }
 
-    if (storeItems.length === 0 && !hasAutoSeeded) {
+    if (!Array.isArray(parsedItems)) {
+        storeItems = LOCAL_DEMO_ITEMS;
+        renderItems(storeItems);
+        show(parsedItems);
+        return;
+    }
+
+    storeItems = buildDisplayCatalog(parsedItems);
+    const catalogUpcs = new Set(storeItems.map(item => item.upc).filter(Boolean));
+    const hasMissingSamples = DEMO_ITEMS.some(item => !catalogUpcs.has(item.upc));
+
+    if ((storeItems.length === 0 || hasMissingSamples) && !hasAutoSeeded) {
         await seedItems();
         return;
     }
@@ -1665,7 +1866,7 @@ function clearCart() {
 }
 
 async function createOrderFromItem(userId, itemId, qty) {
-    const res = await fetch(`${ORDER_URL}/orders?userId=${userId}&itemId=${itemId}&qty=${qty}`, {
+    const res = await fetch(`${ORDER_URL}?userId=${userId}&itemId=${itemId}&qty=${qty}`, {
         method: "POST",
         headers: authHeaders()
     });
@@ -1693,7 +1894,7 @@ async function checkoutFirstItem() {
 }
 
 async function submitPayment(order, paymentMethod) {
-    const res = await fetch(`${PAYMENT_URL}/payments`, {
+    const res = await fetch(`${PAYMENT_URL}`, {
         method: "POST",
         headers: authHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
@@ -1765,7 +1966,7 @@ async function placeOrder() {
         if (!payment || !payment.id) {
             return;
         }
-        const res = await fetch(`${ORDER_URL}/orders/${order.id}/pay`, {
+        const res = await fetch(`${ORDER_URL}/${order.id}/pay`, {
             method: "POST",
             headers: authHeaders()
         });
@@ -1790,6 +1991,7 @@ async function placeOrder() {
 updateAccountUi();
 renderCart();
 syncCheckoutPage();
+resetViewState();
 loadItems();
 
 document.addEventListener("click", closeAccountMenu);

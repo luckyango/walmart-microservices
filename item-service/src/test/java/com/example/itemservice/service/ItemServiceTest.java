@@ -7,12 +7,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -20,6 +25,9 @@ class ItemServiceTest {
 
     @Mock
     private ItemRepository itemRepository;
+
+    @Mock
+    private MongoTemplate mongoTemplate;
 
     @InjectMocks
     private ItemService itemService;
@@ -38,8 +46,9 @@ class ItemServiceTest {
     @Test
     void decreaseInventoryShouldUpdateRemainingCount() {
         Item item = buildItem();
-        when(itemRepository.findById("item-1")).thenReturn(Optional.of(item));
-        when(itemRepository.save(any(Item.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        item.setInventory(7);
+        when(mongoTemplate.findAndModify(any(Query.class), any(Update.class), any(FindAndModifyOptions.class), eq(Item.class)))
+                .thenReturn(item);
 
         Item updated = itemService.decreaseInventory("item-1", 3);
 
