@@ -11,6 +11,11 @@ spring:
   h2:
     console:
       enabled: true
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
@@ -18,3 +23,8 @@ springdoc:
 auth:
   jwt:
     secret: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+
+app:
+  kafka:
+    topics:
+      payment-events: payment-events

@@ -7,6 +7,16 @@ spring:
     local-datacenter: datacenter1
     request:
       timeout: 10s
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+    consumer:
+      group-id: order-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 services:
   item-service-url: http://localhost:8082
   payment-service-url: http://localhost:8084
@@ -17,3 +27,9 @@ springdoc:
 auth:
   jwt:
     secret: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+
+app:
+  kafka:
+    topics:
+      order-events: order-events
+      payment-events: payment-events
